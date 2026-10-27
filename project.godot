@@ -1,0 +1,6 @@
+; Engine configuration file (Minimal-Stub fuer Cloud-Arbeit, kein Ersatz fuer das lokale Projekt)
+config_version=5
+
+[application]
+config/name="Hollental"
+config/features=PackedStringArray("4.3")

@@ -1,0 +1,12 @@
+.godot/
+.import/
+*.translation
+export_presets.cfg
+build/
+*.blend
+*.blend1
+*.fbx
+*.glb
+*.gltf
+*.psd
+*.kra
