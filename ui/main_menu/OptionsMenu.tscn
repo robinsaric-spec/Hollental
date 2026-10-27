@@ -1,0 +1,159 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://ui/main_menu/options_menu.gd" id="1"]
+
+[node name="OptionsMenu" type="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Center"]
+custom_minimum_size = Vector2(820, 560)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="Label" parent="Center/Panel/VBox"]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+text = "Optionen"
+
+[node name="Tabs" type="TabContainer" parent="Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+current_tab = 0
+
+[node name="Audio" type="VBoxContainer" parent="Center/Panel/VBox/Tabs"]
+layout_mode = 2
+theme_override_constants/separation = 20
+metadata/_tab_index = 0
+
+[node name="Anzeige" type="VBoxContainer" parent="Center/Panel/VBox/Tabs"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Steuerung" type="ScrollContainer" parent="Center/Panel/VBox/Tabs"]
+visible = false
+layout_mode = 2
+horizontal_scroll_mode = 0
+metadata/_tab_index = 2
+
+[node name="BackButton" type="Button" parent="Center/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Zurück"
+
+[node name="MasterRow" type="HBoxContainer" parent="Center/Panel/VBox/Tabs/Audio"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Center/Panel/VBox/Tabs/Audio/MasterRow"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Gesamt"
+
+[node name="MasterSlider" type="HSlider" parent="Center/Panel/VBox/Tabs/Audio/MasterRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+step = 1.0
+value = 80.0
+
+[node name="MasterValue" type="Label" parent="Center/Panel/VBox/Tabs/Audio/MasterRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+text = "80 %"
+horizontal_alignment = 2
+
+[node name="MusicRow" type="HBoxContainer" parent="Center/Panel/VBox/Tabs/Audio"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Center/Panel/VBox/Tabs/Audio/MusicRow"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Musik"
+
+[node name="MusicSlider" type="HSlider" parent="Center/Panel/VBox/Tabs/Audio/MusicRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+step = 1.0
+value = 80.0
+
+[node name="MusicValue" type="Label" parent="Center/Panel/VBox/Tabs/Audio/MusicRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+text = "80 %"
+horizontal_alignment = 2
+
+[node name="SfxRow" type="HBoxContainer" parent="Center/Panel/VBox/Tabs/Audio"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Center/Panel/VBox/Tabs/Audio/SfxRow"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Effekte"
+
+[node name="SfxSlider" type="HSlider" parent="Center/Panel/VBox/Tabs/Audio/SfxRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+step = 1.0
+value = 80.0
+
+[node name="SfxValue" type="Label" parent="Center/Panel/VBox/Tabs/Audio/SfxRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+text = "80 %"
+horizontal_alignment = 2
+
+[node name="WindowRow" type="HBoxContainer" parent="Center/Panel/VBox/Tabs/Anzeige"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Center/Panel/VBox/Tabs/Anzeige/WindowRow"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Fenstermodus"
+
+[node name="WindowModeOption" type="OptionButton" parent="Center/Panel/VBox/Tabs/Anzeige/WindowRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="BindingsList" type="VBoxContainer" parent="Center/Panel/VBox/Tabs/Steuerung"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
