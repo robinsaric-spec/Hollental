@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup A – Nebeltal</title>
+<style>
+:root{--night:#050810;--text:#d9d3c0;--muted:#8a9a94;--accent:#d9a441;--accent-h:#f0c46a;--disabled:#4a5553}
+*{box-sizing:border-box;margin:0}
+body{min-height:100vh;font-family:Georgia,serif;color:var(--text);background:var(--night);overflow:hidden;position:relative}
+.sky{position:absolute;inset:0;background:linear-gradient(#050810 0%,#0e1b26 40%,#1f3a3c 70%,#3a5a50 100%)}
+.moon{position:absolute;right:22%;top:14%;width:7vmin;height:7vmin;border-radius:50%;background:#e6e2c8;box-shadow:0 0 60px 30px rgba(230,226,200,.12)}
+svg{position:absolute;left:0;bottom:0;width:100%;height:62%}
+.fog{position:absolute;left:-30%;width:160%;height:22%;background:radial-gradient(ellipse at center,rgba(140,180,175,.16),transparent 65%);animation:drift 40s linear infinite alternate}
+.fog.f1{bottom:30%}.fog.f2{bottom:10%;animation-duration:55s}
+@keyframes drift{to{transform:translateX(15%)}}
+.shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,10,13,.75),transparent 60%)}
+.fly{position:absolute;width:4px;height:4px;border-radius:50%;background:#f0c46a;box-shadow:0 0 12px 4px rgba(240,196,106,.5);animation:blink 4s ease-in-out infinite}
+@keyframes blink{50%{opacity:.1}}
+nav{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:0 8vw}
+h1{font-size:clamp(48px,9vw,112px);letter-spacing:.14em;color:#e8dcb8;text-shadow:0 6px 24px #000}
+.sub{color:var(--accent);font-size:1.3rem;letter-spacing:.08em;margin:6px 0 48px}
+button{display:block;width:360px;max-width:100%;text-align:left;background:none;border:0;border-left:3px solid transparent;color:var(--text);font:inherit;font-size:1.7rem;padding:12px 24px;cursor:pointer;transition:.2s}
+button:hover,button:focus-visible{background:rgba(217,164,65,.12);border-color:var(--accent);color:var(--accent-h);outline:0;padding-left:34px}
+button:disabled{color:var(--disabled);cursor:default;background:none;border-color:transparent;padding-left:24px}
+.ver{position:absolute;right:32px;bottom:20px;color:var(--muted);font-size:.9rem;z-index:2}
+</style></head><body>
+<div class="sky"></div><div class="moon"></div>
+<div class="fog f1"></div>
+<svg viewBox="0 0 1600 600" preserveAspectRatio="none">
+<path d="M0 200 Q200 90 400 170 T800 130 T1200 180 T1600 120 V600 H0Z" fill="#1a2f33"/>
+<path d="M0 300 Q250 190 520 280 T1050 250 T1600 270 V600 H0Z" fill="#12232a"/>
+<path d="M0 420 Q300 340 640 410 T1250 380 T1600 400 V600 H0Z" fill="#0b161b"/>
+<path d="M0 520 Q400 470 800 510 T1600 490 V600 H0Z" fill="#050a0d"/>
+</svg>
+<div class="fog f2"></div><div class="shade"></div>
+<i class="fly" style="left:55%;top:68%"></i><i class="fly" style="left:68%;top:74%;animation-delay:1s"></i><i class="fly" style="left:78%;top:63%;animation-delay:2s"></i><i class="fly" style="left:48%;top:80%;animation-delay:3s"></i>
+<nav><h1>HOLLENTAL</h1><p class="sub">Wo der Nebel die Wahrheit hütet</p>
+<button>Neues Spiel</button><button disabled>Fortsetzen</button><button>Optionen</button><button>Beenden</button></nav>
+<div class="ver">Pre-Alpha · v0.0.1</div>
+</body></html>

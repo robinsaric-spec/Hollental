@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup B – Herbstcodex</title>
+<style>
+:root{--ink:#2a1d14;--paper:#e8d9b5;--paper-d:#cdb98a;--red:#8c2f1f;--gold:#b8862b;--bg:#1a120c}
+*{box-sizing:border-box;margin:0}
+body{min-height:100vh;display:grid;place-items:center;font-family:Georgia,serif;color:var(--ink);
+background:radial-gradient(ellipse at 50% 30%,#4a2d17 0%,#1a120c 70%);position:relative;overflow:hidden}
+body:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 80px,rgba(255,170,60,.03) 80px 82px)}
+.leaf{position:absolute;width:18px;height:12px;border-radius:0 100% 0 100%;background:#a8481f;opacity:.7;animation:fall 14s linear infinite}
+@keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(540deg)}}
+.book{position:relative;width:min(560px,92vw);padding:56px 48px 44px;background:linear-gradient(var(--paper),var(--paper-d));border:2px solid var(--gold);border-radius:6px;
+box-shadow:0 0 0 8px #3a2414,0 0 0 10px var(--gold),0 30px 80px #000;text-align:center}
+.ornament{color:var(--gold);letter-spacing:.6em;font-size:1.1rem}
+h1{font-size:clamp(40px,8vw,72px);letter-spacing:.12em;color:var(--red);margin:10px 0 4px;font-variant:small-caps}
+.sub{font-style:italic;margin-bottom:36px;opacity:.8}
+button{display:block;width:100%;margin:12px 0;padding:14px;font:inherit;font-size:1.35rem;color:var(--ink);background:transparent;border:1px solid rgba(42,29,20,.5);border-radius:3px;cursor:pointer;transition:.2s}
+button:hover,button:focus-visible{background:var(--red);color:var(--paper);border-color:var(--red);letter-spacing:.06em;outline:0}
+button:disabled{opacity:.35;cursor:default;background:none;color:var(--ink);letter-spacing:0}
+.ver{margin-top:28px;font-size:.8rem;opacity:.6}
+</style></head><body>
+<i class="leaf" style="left:12%;animation-delay:0s"></i><i class="leaf" style="left:30%;animation-delay:4s"></i><i class="leaf" style="left:62%;animation-delay:2s"></i><i class="leaf" style="left:85%;animation-delay:7s"></i>
+<main class="book"><div class="ornament">❦ ✦ ❦</div><h1>Hollental</h1><p class="sub">Wo der Nebel die Wahrheit hütet</p>
+<button>Neues Spiel</button><button disabled>Fortsetzen</button><button>Optionen</button><button>Beenden</button>
+<p class="ver">Pre-Alpha · v0.0.1</p></main>
+</body></html>

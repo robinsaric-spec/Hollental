@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup C – Runenstein</title>
+<style>
+:root{--bg:#0c0f12;--slate:#171d22;--line:#2e3a40;--text:#cfd8d6;--muted:#6f8280;--rune:#5fd0c0;--rune-h:#9ff2e4}
+*{box-sizing:border-box;margin:0}
+body{min-height:100vh;display:grid;place-items:center;font-family:"Trebuchet MS",sans-serif;color:var(--text);
+background:radial-gradient(circle at 50% 45%,#16262a 0%,var(--bg) 65%);overflow:hidden;position:relative}
+.ring{position:absolute;width:90vmin;height:90vmin;border:1px solid var(--line);border-radius:50%;animation:spin 120s linear infinite}
+.ring:before{content:"ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ ᚺ ᚾ ᛁ ᛃ ᛇ ᛈ ᛉ ᛊ";position:absolute;inset:-14px;color:var(--line);letter-spacing:2.4vmin;font-size:2.4vmin;word-break:break-all;text-align:center;border-radius:50%}
+.ring.r2{width:62vmin;height:62vmin;animation-direction:reverse;animation-duration:90s}
+@keyframes spin{to{transform:rotate(360deg)}}
+main{position:relative;z-index:1;text-align:center}
+h1{font-size:clamp(36px,7vw,80px);font-weight:300;letter-spacing:.5em;margin-right:-.5em;color:var(--rune-h);text-shadow:0 0 30px rgba(95,208,192,.45)}
+.sub{color:var(--muted);letter-spacing:.3em;font-size:.8rem;text-transform:uppercase;margin:12px 0 44px}
+button{display:block;width:300px;margin:10px auto;padding:13px;background:var(--slate);color:var(--text);font:inherit;letter-spacing:.2em;text-transform:uppercase;font-size:.95rem;border:1px solid var(--line);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);cursor:pointer;transition:.2s}
+button:hover,button:focus-visible{background:#1d2c2f;color:var(--rune-h);border-color:var(--rune);box-shadow:0 0 18px rgba(95,208,192,.35);outline:0}
+button:disabled{color:#3a4648;cursor:default;box-shadow:none;background:var(--slate)}
+.ver{position:absolute;bottom:18px;color:var(--muted);font-size:.75rem;letter-spacing:.2em}
+</style></head><body>
+<div class="ring"></div><div class="ring r2"></div>
+<main><h1>HOLLENTAL</h1><p class="sub">Wo der Nebel die Wahrheit hütet</p>
+<button>Neues Spiel</button><button disabled>Fortsetzen</button><button>Optionen</button><button>Beenden</button></main>
+<div class="ver">Pre-Alpha · v0.0.1</div>
+</body></html>
