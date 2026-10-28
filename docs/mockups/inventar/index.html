@@ -42,6 +42,7 @@ canvas{display:block}
   linear-gradient(180deg,#0a2030 0%,#06141f 60%,#040b12 100%)}
 .world svg{position:absolute;inset:0;width:100%;height:100%}
 .world svg:nth-of-type(1){filter:blur(4px);opacity:.75}.world svg:nth-of-type(2){filter:blur(1.5px)}
+.world::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 78% 72% at 50% 46%,transparent 55%,#01060bd9 100%);pointer-events:none}
 .world .fog{position:absolute;inset:0;background:linear-gradient(0deg,#0d3040cc 0%,#0d304000 42%),radial-gradient(ellipse 40% 30% at 60% 70%,#1d5a6a55,transparent 70%);animation:fog 14s ease-in-out infinite alternate}
 @keyframes fog{to{transform:translateX(-40px);opacity:.8}}
 .world .bokeh{position:absolute;border-radius:50%;opacity:0;animation:bokeh 8s ease-in-out infinite}
@@ -74,6 +75,7 @@ canvas{display:block}
   box-shadow:0 0 0 1px #050f19,0 0 0 5px #0f2e4a55,inset 0 0 0 1px #a6dcff1c,inset 0 1px 0 #cfeeff30,0 30px 90px #000b,0 0 70px #2e8fff40;
   transform-origin:var(--ox,120px) var(--oy,90px)}
 #win::before{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--noise);opacity:.045;mix-blend-mode:overlay;pointer-events:none}
+#win .gloss{position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(118deg,#ffffff0e 0%,#ffffff00 24%,#ffffff00 72%,#ffffff08 100%),linear-gradient(180deg,#ffffff08,#ffffff00 12%)}
 #win.opening{animation:winOpen 1s var(--ease-out) both}
 #win.closing{animation:winClose .55s cubic-bezier(.6,0,.8,.2) both}
 #win.closed{display:none}
@@ -88,6 +90,8 @@ canvas{display:block}
 .orn.bl{left:-8px;bottom:-8px;transform:scaleY(-1)}
 .orn.br{right:-8px;bottom:-8px;transform:scale(-1,-1)}
 .dock{position:absolute;left:-27px;top:-32px;width:236px;height:236px;pointer-events:none}
+/* statische, gefilterte Deko auf eigene Ebenen: wird einmal gerastert statt jedes Frame */
+.dock:not(.dock-rings),#win > .orn,.dframe{will-change:transform}
 .dock .spin{transform-origin:125px 125px;animation:spin 26s linear infinite}
 .dock .spin2{transform-origin:125px 125px;animation:spin 14s linear infinite reverse}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -161,7 +165,7 @@ canvas{display:block}
 .card:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .card.deal{animation:deal .6s var(--ease-out) both}
 @keyframes deal{from{opacity:0;transform:translateY(26px) scale(.94)}to{opacity:1;transform:none}}
-.por{width:118px;height:118px;flex:none;border-radius:50%;position:relative;padding:3px;background:linear-gradient(145deg,var(--cu-4),var(--cu-2) 35%,var(--cu-1) 60%,var(--cu-3));box-shadow:0 0 0 2px #071626,0 4px 12px #0007;transition:transform .35s var(--ease-spring),box-shadow .3s}
+.por{width:118px;height:118px;flex:none;border-radius:50%;position:relative;padding:3px;background:conic-gradient(from 200deg,var(--cu-4),var(--cu-2) 18%,var(--cu-1) 38%,var(--cu-3) 55%,var(--cu-4) 66%,var(--cu-2) 80%,var(--cu-1) 92%,var(--cu-4));box-shadow:0 0 0 2px #071626,0 4px 12px #0007,inset 0 1px 1px #fff9,inset 0 -1px 1px #000a;transition:transform .35s var(--ease-spring),box-shadow .3s}
 .por .in{position:absolute;inset:3px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 38%,color-mix(in srgb,var(--c,#45c9e6) 42%,#173d60),#0a1e33 74%);box-shadow:inset 0 0 0 2px #06142288,inset 0 -10px 22px #0008}
 .por canvas,.por img{position:absolute;inset:0;width:100%;height:100%}
 .por img{object-fit:cover}
@@ -195,7 +199,8 @@ canvas{display:block}
   background:radial-gradient(ellipse 62% 70% at 70% 46%,color-mix(in srgb,var(--aura) 26%,#123a5e),#0a1d31 72%);
   border:1.5px solid #4f97d6bb;box-shadow:inset 0 0 0 1px #a6dcff1c,inset 0 0 60px #000a,0 0 34px #2e8fff33;transition:background 1s}
 .detail::before{content:"";position:absolute;inset:0;background:var(--noise);opacity:.05;mix-blend-mode:overlay;z-index:9;pointer-events:none}
-.layer{position:absolute;inset:0;pointer-events:none;transition:transform .7s var(--ease-out)}
+.layer{position:absolute;inset:0;pointer-events:none;transition:transform .7s var(--ease-out);will-change:transform}
+.dmist{background:radial-gradient(ellipse 55% 40% at 62% 76%,color-mix(in srgb,var(--aura) 16%,#a9d6e8 6%),transparent 72%);opacity:.9;animation:fog 18s ease-in-out infinite alternate}
 .d-far{transform:translate(calc(var(--mx,0)*-10px),calc(var(--my,0)*-6px))}
 .d-mid{transform:translate(calc(var(--mx,0)*-18px),calc(var(--my,0)*-10px))}
 .d-rings{transform:translate(calc(var(--mx,0)*-26px),calc(var(--my,0)*-14px))}
@@ -222,7 +227,8 @@ canvas{display:block}
 .beam.flash{animation:beam 1s ease-out}
 @keyframes beam{0%{opacity:0}30%{opacity:.8}100%{opacity:0}}
 .ped{position:absolute;left:366px;top:440px;width:552px;height:187px}
-.ped svg{width:100%;height:100%;overflow:visible}
+.ped svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ped .pb,.ped .pm{will-change:transform}
 .ped .floor{transform-origin:0 0;animation:spin 40s linear infinite}
 .ped .floor2{transform-origin:0 0;animation:spin 24s linear infinite reverse}
 .ped .rune{animation:runeGlow 4.5s ease-in-out infinite;opacity:.25}
@@ -307,8 +313,8 @@ canvas{display:block}
 .btn.ghost{min-width:132px;background:linear-gradient(180deg,#13385cdd,#0b2540dd);border:1.5px solid #e7ad7488;box-shadow:inset 0 1px 0 #ffffff1a}
 .btn.ghost:hover{border-color:var(--cu-4);box-shadow:0 0 18px #e7ad7444,inset 0 1px 0 #ffffff26}
 .btn.primary{min-width:196px;background:linear-gradient(180deg,#a6e6ff,#4aa8f0 60%,#3a8fdd);color:#06223a;border:1.5px solid #e2f6ff;box-shadow:0 0 26px #58b8ffaa,inset 0 1px 0 #ffffffaa}
-.btn.primary::after{content:"";position:absolute;top:0;bottom:0;width:60px;left:-80px;background:linear-gradient(100deg,transparent,#ffffffcc,transparent);transform:skewX(-20deg);animation:btnSheen 4.5s ease-in-out infinite}
-@keyframes btnSheen{0%,70%{left:-80px}100%{left:110%}}
+.btn.primary::after{content:"";position:absolute;top:0;bottom:0;width:60px;left:0;background:linear-gradient(100deg,transparent,#ffffffcc,transparent);transform:translateX(-80px) skewX(-20deg);animation:btnSheen 4.5s ease-in-out infinite}
+@keyframes btnSheen{0%,70%{transform:translateX(-80px) skewX(-20deg)}100%{transform:translateX(340px) skewX(-20deg)}}
 .btn.primary:hover{box-shadow:0 0 40px #8fd6ffee,inset 0 1px 0 #ffffffcc;transform:translateY(-2px)}
 .btn.primary:hover svg{transform:scale(1.2) rotate(-12deg)}
 .btn:active{transform:scale(.95)}
@@ -367,7 +373,14 @@ kbd{font-family:inherit;font-size:16px;min-width:30px;text-align:center;padding:
     <radialGradient id="gem" cx=".38" cy=".35" r=".7">
       <stop offset="0" stop-color="#e6fffb"/><stop offset=".35" stop-color="#4ff0e0"/><stop offset=".8" stop-color="#0e8f88"/><stop offset="1" stop-color="#06504c"/>
     </radialGradient>
-    <symbol id="orn" viewBox="0 0 140 140">
+    <filter id="metal" x="-6%" y="-6%" width="112%" height="112%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.1" result="b"/>
+      <feSpecularLighting in="b" surfaceScale="2.6" specularConstant="1.15" specularExponent="18" lighting-color="#fff1d6" result="s"><feDistantLight azimuth="225" elevation="45"/></feSpecularLighting>
+      <feComposite in="s" in2="SourceAlpha" operator="in" result="s2"/>
+      <feComposite in="SourceGraphic" in2="s2" operator="arithmetic" k1="0" k2="1" k3=".85" k4="0" result="lit"/>
+      <feDropShadow in="lit" dx="0" dy="1.2" stdDeviation="1" flood-color="#000" flood-opacity=".6"/>
+    </filter>
+    <symbol id="orn" viewBox="0 0 140 140"><g filter="url(#metal)">
       <path d="M5 136V42C5 20 20 5 42 5h94" fill="none" stroke="url(#cu)" stroke-width="3.2"/>
       <path d="M13 118V46c0-18 15-33 33-33h72" fill="none" stroke="url(#cu)" stroke-width="1.3" opacity=".7"/>
       <path d="M42 5c14 18 34 20 52 8M5 42c18 14 20 34 8 52" fill="none" stroke="url(#cu)" stroke-width="1.7"/>
@@ -376,7 +389,7 @@ kbd{font-family:inherit;font-size:16px;min-width:30px;text-align:center;padding:
       <circle cx="24" cy="24" r="11" fill="#0a2034" stroke="url(#cu)" stroke-width="2.6"/>
       <circle cx="24" cy="24" r="6" fill="url(#gem)"/><circle cx="22" cy="21.5" r="1.8" fill="#fff" opacity=".85"/>
       <circle cx="122" cy="5" r="2.4" fill="url(#cu)"/><circle cx="5" cy="122" r="2.4" fill="url(#cu)"/>
-    </symbol>
+    </g></symbol>
     <g id="i-paw"><ellipse cx="12" cy="16" rx="5" ry="4.2"/><ellipse cx="5.5" cy="10.5" rx="2.2" ry="2.8"/><ellipse cx="18.5" cy="10.5" rx="2.2" ry="2.8"/><ellipse cx="9" cy="6" rx="2.2" ry="2.8"/><ellipse cx="15" cy="6" rx="2.2" ry="2.8"/></g>
     <g id="i-bag"><path d="M6 8h12l1.5 12.5H4.5z"/><path d="M9 8V6a3 3 0 016 0v2"/><path d="M9.5 13h5"/></g>
   </defs>
@@ -387,11 +400,15 @@ kbd{font-family:inherit;font-size:16px;min-width:30px;text-align:center;padding:
 <div id="stage">
 
   <section id="win" class="closed" role="dialog" aria-label="Hollental Inventar">
+    <div class="gloss" aria-hidden="true"></div>
     <svg class="dock" viewBox="0 0 250 250" aria-hidden="true">
       <defs><radialGradient id="dockGlow"><stop offset="0" stop-color="#38d9cc" stop-opacity=".35"/><stop offset=".6" stop-color="#2e8fff" stop-opacity=".12"/><stop offset="1" stop-color="#2e8fff" stop-opacity="0"/></radialGradient></defs>
       <circle cx="125" cy="125" r="118" fill="url(#dockGlow)"/>
-      <circle cx="125" cy="125" r="96" fill="#071a2c" stroke="url(#cu)" stroke-width="3"/>
+      <circle cx="125" cy="125" r="96" fill="#071a2c"/>
+      <g filter="url(#metal)"><circle cx="125" cy="125" r="96" fill="none" stroke="url(#cu)" stroke-width="3.4"/></g>
       <circle cx="125" cy="125" r="88" fill="none" stroke="#e7ad7444" stroke-width="1"/>
+    </svg>
+    <svg class="dock dock-rings" viewBox="0 0 250 250" aria-hidden="true">
       <g class="spin"><circle cx="125" cy="125" r="106" fill="none" stroke="#38d9cc" stroke-width="2" stroke-dasharray="3 9 24 9" opacity=".75"/></g>
       <g class="spin2"><circle cx="125" cy="125" r="80" fill="none" stroke="#7fd6ff" stroke-width="1.5" stroke-dasharray="40 14 4 14" opacity=".45"/></g>
     </svg>
@@ -432,6 +449,7 @@ kbd{font-family:inherit;font-size:16px;min-width:30px;text-align:center;padding:
           <div class="layer rays" id="rays"></div>
           <div class="layer d-mid" id="dMid"></div>
           <div class="layer d-rings"><div class="pillar"></div><div class="halo" id="halo"></div></div>
+          <div class="layer dmist" aria-hidden="true"></div>
           <div class="layer d-stage" id="dStage">
             <div class="fx" id="fxBack"></div>
             <div class="beam" id="beam"></div>
@@ -469,7 +487,7 @@ kbd{font-family:inherit;font-size:16px;min-width:30px;text-align:center;padding:
             <div class="inner"></div>
             <svg class="orn tl"><use href="#orn"/></svg><svg class="orn tr"><use href="#orn"/></svg>
             <svg class="orn bl"><use href="#orn"/></svg><svg class="orn br"><use href="#orn"/></svg>
-            <svg class="crest" viewBox="0 0 300 40"><path d="M0 4h112M188 4h112" stroke="#c8834a" stroke-width="2"/><path d="M112 4c10 0 16 6 22 14M188 4c-10 0-16 6-22 14" fill="none" stroke="url(#cu)" stroke-width="2"/><path d="M150 4l16 14-16 14-16-14z" fill="#0a2034" stroke="url(#cu)" stroke-width="2.4"/><path d="M150 10l9 8-9 8-9-8z" fill="url(#gem)"/><circle cx="147" cy="15" r="1.6" fill="#fff"/></svg>
+            <svg class="crest" viewBox="0 0 300 40"><g filter="url(#metal)"><path d="M0 4h112M188 4h112" stroke="#c8834a" stroke-width="2"/><path d="M112 4c10 0 16 6 22 14M188 4c-10 0-16 6-22 14" fill="none" stroke="url(#cu)" stroke-width="2"/><path d="M150 4l16 14-16 14-16-14z" fill="#0a2034" stroke="url(#cu)" stroke-width="2.4"/><path d="M150 10l9 8-9 8-9-8z" fill="url(#gem)"/><circle cx="147" cy="15" r="1.6" fill="#fff"/></g></svg>
           </div>
         </section>
       </div>
@@ -661,23 +679,36 @@ class Rig {
 }
 
 /* ---------- WebGL-Ansicht (ein Canvas zeichnet ein Rig) ---------- */
-const VS = `attribute vec2 aPos;attribute vec2 aUv;uniform vec4 uView;uniform vec4 uXf;uniform vec2 uOff;varying vec2 vUv;
-void main(){vec2 p=uXf.xy+(aPos-uXf.xy)*uXf.zw+uOff;vec2 c=(p-uView.xy)/uView.zw;gl_Position=vec4(c.x*2.0-1.0,1.0-c.y*2.0,0.0,1.0);vUv=aUv;}`;
+const VS = `attribute vec2 aPos;attribute vec2 aUv;uniform vec4 uView;uniform vec4 uXf;uniform vec2 uOff;uniform float uMirror,uMirY;varying vec2 vUv;varying float vMir;
+void main(){vec2 p=uXf.xy+(aPos-uXf.xy)*uXf.zw;
+if(uMirror>0.5){p.y=uMirY+(uMirY-p.y)*0.55;p+=vec2(uOff.x,-uOff.y*0.55);}else{p+=uOff;}
+vMir=p.y-uMirY;vec2 c=(p-uView.xy)/uView.zw;gl_Position=vec4(c.x*2.0-1.0,1.0-c.y*2.0,0.0,1.0);vUv=aUv;}`;
 const FS = `#ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
 #else
 precision mediump float;
 #endif
-varying vec2 vUv;uniform sampler2D uTex;uniform sampler2D uGlow;
+varying vec2 vUv;varying float vMir;uniform sampler2D uTex;uniform sampler2D uGlow;
 uniform float uTime,uGlowAmt,uFlash,uTintAmt,uEyeAmt,uDis,uSil,uShine;uniform vec3 uGlowCol,uTint,uSilCol;uniform vec4 uEye;uniform vec2 uCenter;
+uniform float uMirror,uRimAmt,uAO,uFeetY;uniform vec2 uRimDir,uRefl;uniform vec3 uRimCol;uniform vec4 uEll;
 float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
  return mix(mix(hash(i),hash(i+vec2(1.0,0.0)),f.x),mix(hash(i+vec2(0.0,1.0)),hash(i+vec2(1.0,1.0)),f.x),f.y);}
 float fbm(vec2 p){return 0.65*noise(p)+0.35*noise(p*2.3+7.3);}
-void main(){vec4 c=texture2D(uTex,vUv);float g=texture2D(uGlow,vUv).r;
+void main(){
+// Spiegelung im Wasser des Sockels: gestaucht, gewellt, verblassend, nur innerhalb der Wasserfläche
+if(uMirror>0.5){vec2 uv=vUv+vec2(sin(vUv.y*160.0+uTime*2.6)*0.002,0.0);vec4 r=texture2D(uTex,uv);
+ float fade=smoothstep(-0.003,0.004,vMir)*(1.0-smoothstep(0.0,uRefl.x,vMir));float m=1.0-smoothstep(0.78,1.0,length((gl_FragCoord.xy-uEll.xy)/uEll.zw));
+ float k=fade*m*uRefl.y*(1.0-uDis);vec3 rc=mix(r.rgb*vec3(0.5,0.66,0.78),uSilCol*r.a,uSil);gl_FragColor=vec4(rc*k,r.a*k);return;}
+vec4 c=texture2D(uTex,vUv);float g=texture2D(uGlow,vUv).r;
 if(uEyeAmt>0.0){float ed=length((vUv-uEye.xy)/uEye.zw);g*=1.0-uEyeAmt*smoothstep(1.0,0.6,ed);}
 float flow=0.55+0.45*sin(uTime*2.3-(vUv.x*7.0+vUv.y*11.0));
 vec3 col=c.rgb*(1.0-0.06*uTintAmt)+uTint*c.a*smoothstep(0.5,1.0,vUv.y)*0.16*uTintAmt;
+col=mix(col,col*vec3(0.9,0.97,1.07),0.55*uTintAmt);
+// Kantenlicht von der Lichtquelle oben rechts (Kante = Alpha fällt in Lichtrichtung ab)
+if(uRimAmt>0.0){float a1=texture2D(uTex,vUv+uRimDir).a,a2=texture2D(uTex,vUv+uRimDir*2.4).a;float rim=clamp(c.a-(a1*0.45+a2*0.55),0.0,1.0);col+=uRimCol*rim*uRimAmt;}
+// Bodenverschattung an den Füßen
+if(uAO>0.0){col*=1.0-uAO*smoothstep(uFeetY-0.075,uFeetY+0.005,vUv.y);}
 col+=uGlowCol*g*uGlowAmt*flow;col+=vec3(0.55,0.88,1.0)*uFlash*c.a;float a=c.a;
 // Silhouette: Gestalt leuchtet in der Aura-Farbe, bevor die Farbe einfließt
 if(uSil>0.0){float lum=dot(c.rgb/max(c.a,0.001),vec3(0.299,0.587,0.114));float en=fbm(vUv*16.0+vec2(uTime*0.6,-uTime*0.9));
@@ -705,11 +736,13 @@ class GLView {
     const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
     if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr));
     this.pr = pr; gl.useProgram(pr);
-    this.u = {}; ['uView', 'uXf', 'uOff', 'uTime', 'uGlowAmt', 'uFlash', 'uTintAmt', 'uGlowCol', 'uTint', 'uTex', 'uGlow', 'uEye', 'uEyeAmt', 'uDis', 'uSil', 'uShine', 'uSilCol', 'uCenter'].forEach(n => this.u[n] = gl.getUniformLocation(pr, n));
+    this.u = {}; ['uView', 'uXf', 'uOff', 'uTime', 'uGlowAmt', 'uFlash', 'uTintAmt', 'uGlowCol', 'uTint', 'uTex', 'uGlow', 'uEye', 'uEyeAmt', 'uDis', 'uSil', 'uShine', 'uSilCol', 'uCenter', 'uMirror', 'uMirY', 'uRimAmt', 'uAO', 'uFeetY', 'uRimDir', 'uRefl', 'uRimCol', 'uEll'].forEach(n => this.u[n] = gl.getUniformLocation(pr, n));
     this.aPos = gl.getAttribLocation(pr, 'aPos'); this.aUv = gl.getAttribLocation(pr, 'aUv');
     gl.uniform1i(this.u.uTex, 0); gl.uniform1i(this.u.uGlow, 1);
     gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    this.p = { dis: 0, sil: 0, shine: 0, flash: 0, glow: 1, offX: 0, offY: 0, sx: 1, sy: 1, tint: 0 };
+    this.p = { dis: 0, sil: 0, shine: 0, flash: 0, glow: 1, offX: 0, offY: 0, sx: 1, sy: 1, tint: 0, rim: 0, ao: 0 };
+    this.refl = false;   // Spiegelung im Sockelwasser (nur große Ansicht)
+    this.reflK = [0.12, 0.55];   // Ausblendlänge (Bildhöhen), Stärke
     this.silCol = [0.6, 0.9, 1.0];
     this.tw = [];
   }
@@ -760,6 +793,15 @@ class GLView {
     gl.uniform1f(this.u.uFlash, p.flash); gl.uniform1f(this.u.uTintAmt, p.tint);
     gl.uniform3fv(this.u.uGlowCol, d.glowCol); gl.uniform3fv(this.u.uTint, d.tintCol || [0.3, 0.8, 0.9]);
     const eg = d.eyeGlow || [0, 0, 1]; gl.uniform4f(this.u.uEye, eg[0] / d.W, eg[1] / d.H, eg[2] / d.W, eg[2] / d.H); gl.uniform1f(this.u.uEyeAmt, d.eyeGlow ? r.rig.ch.blink : 0);
+    const sc = this.silCol; gl.uniform3f(this.u.uRimCol, sc[0] * .7 + .22, sc[1] * .7 + .24, sc[2] * .7 + .26);
+    gl.uniform2f(this.u.uRimDir, 0.0035, -0.0045); gl.uniform1f(this.u.uRimAmt, p.rim); gl.uniform1f(this.u.uAO, p.ao); gl.uniform1f(this.u.uFeetY, d.anchor[1] / d.H);
+    if (this.refl) {
+      const k = this.canvas.width / this.css[0];
+      gl.uniform4f(this.u.uEll, 360 * k, (632 - 510.4) * k, 222 * k, 41 * k); gl.uniform2f(this.u.uRefl, this.reflK[0], this.reflK[1]);
+      gl.uniform1f(this.u.uMirY, (d.anchor[1] + (510.4 - 522) / d.stage.s) / d.H);   // Wasserlinie (Sockelmitte) in Bildkoordinaten
+      gl.uniform1f(this.u.uMirror, 1); gl.drawElements(gl.TRIANGLES, r.rig.idx.length, gl.UNSIGNED_SHORT, 0);
+    }
+    gl.uniform1f(this.u.uMirror, 0);
     gl.drawElements(gl.TRIANGLES, r.rig.idx.length, gl.UNSIGNED_SHORT, 0);
   }
 }
@@ -828,10 +870,43 @@ const EVO = [{ id: 'moosmolch' }, { id: 'moorhueter', lv: 30 }];
 const team = [CREATURES.moosmolch, CREATURES.moorhueter, null, null, null, null];
 
 const ITEM_SVG = {
-  potion: `<svg viewBox="0 0 100 100"><defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6b7d"/><stop offset="1" stop-color="#a80f26"/></linearGradient></defs><rect x="42" y="10" width="16" height="13" rx="3" fill="#b07a44"/><rect x="40" y="20" width="20" height="5" rx="2" fill="#7a4e2a"/><path d="M44 25h12v9c14 6 22 18 22 32 0 18-12 26-28 26S22 84 22 66c0-14 8-26 22-32z" fill="#cfe9ff" opacity=".28" stroke="#e6f6ff" stroke-opacity=".5" stroke-width="1.5"/><path d="M25 62c10-5 40-5 50 0 2 17-9 25-25 25S23 79 25 62z" fill="url(#pg)"/><ellipse cx="50" cy="62" rx="25" ry="4" fill="#ff9aa6" opacity=".7"/><path d="M34 42c-6 6-8 14-8 20" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/><circle cx="60" cy="74" r="2.5" fill="#fff" opacity=".6"/></svg>`,
-  berries: `<svg viewBox="0 0 100 100"><defs><radialGradient id="bg1" cx=".35" cy=".35"><stop offset="0" stop-color="#ff5a6e"/><stop offset="1" stop-color="#8e0a20"/></radialGradient></defs><path d="M50 30c10-14 26-16 36-10-10 10-24 14-36 10z" fill="#4aa040"/><path d="M50 30c-8-12-22-14-30-8 8 8 20 12 30 8z" fill="#6cc85a"/><path d="M50 30v14" stroke="#3a7a32" stroke-width="3"/><circle cx="34" cy="58" r="15" fill="url(#bg1)"/><circle cx="62" cy="54" r="15" fill="url(#bg1)"/><circle cx="48" cy="78" r="15" fill="url(#bg1)"/><circle cx="74" cy="76" r="13" fill="url(#bg1)"/><circle cx="29" cy="52" r="4" fill="#fff" opacity=".75"/><circle cx="57" cy="48" r="4" fill="#fff" opacity=".75"/><circle cx="43" cy="72" r="4" fill="#fff" opacity=".75"/><circle cx="70" cy="71" r="3.4" fill="#fff" opacity=".7"/></svg>`,
-  rope: `<svg viewBox="0 0 100 100" fill="none" stroke-linecap="round"><ellipse cx="50" cy="58" rx="34" ry="24" stroke="#6e4422" stroke-width="12"/><ellipse cx="50" cy="58" rx="34" ry="24" stroke="#b07c42" stroke-width="8"/><ellipse cx="50" cy="58" rx="20" ry="13" stroke="#8a5a2c" stroke-width="9"/><ellipse cx="50" cy="58" rx="34" ry="24" stroke="#e0b077" stroke-width="2.4" stroke-dasharray="5 7"/><ellipse cx="50" cy="58" rx="20" ry="13" stroke="#d6a46a" stroke-width="2" stroke-dasharray="4 6"/><path d="M78 46c10-8 14-20 8-28" stroke="#b07c42" stroke-width="8"/><path d="M78 46c10-8 14-20 8-28" stroke="#e0b077" stroke-width="2" stroke-dasharray="4 6"/></svg>`,
-  crystal: `<svg viewBox="0 0 100 100"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bfe8ff"/><stop offset=".5" stop-color="#4aa8ff"/><stop offset="1" stop-color="#1b4fa8"/></linearGradient></defs><path d="M50 6l16 30-6 54H40l-6-54z" fill="url(#cg)"/><path d="M50 6l16 30-16 8-16-8z" fill="#d6f0ff"/><path d="M50 44v46" stroke="#e6f6ff" stroke-width="2"/><path d="M24 40l12 14-4 34-12-8-6-26z" fill="#2a73d6"/><path d="M24 40l12 14-10 2z" fill="#9fd6ff"/><path d="M76 34l14 18-4 30-14 8-2-36z" fill="#3c8fe0"/><path d="M76 34l14 18-14 2z" fill="#d6f0ff"/><circle cx="56" cy="22" r="2.5" fill="#fff"/></svg>`,
+  potion: `<svg viewBox="0 0 100 100"><defs><linearGradient id="pgL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7d8c"/><stop offset=".45" stop-color="#d81f36"/><stop offset="1" stop-color="#6e0816"/></linearGradient>
+    <radialGradient id="pgG" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".5" stop-color="#cfe9ff" stop-opacity=".1"/><stop offset="1" stop-color="#9ec6e6" stop-opacity=".25"/></radialGradient>
+    <linearGradient id="pgC" x1="0" x2="1"><stop offset="0" stop-color="#6b4224"/><stop offset=".45" stop-color="#c99c64"/><stop offset="1" stop-color="#5e3a1f"/></linearGradient></defs>
+    <ellipse cx="50" cy="93" rx="27" ry="4.5" fill="#000" opacity=".42"/>
+    <path d="M44 25h12v9c14 6 22 18 22 32 0 18-12 26-28 26S22 84 22 66c0-14 8-26 22-32z" fill="#0d1b28" opacity=".4"/>
+    <path d="M25 63c10-5 40-5 50 0 2 17-9 26-25 26S23 80 25 63z" fill="url(#pgL)"/><ellipse cx="50" cy="63" rx="25" ry="4.2" fill="#ff9aa6" opacity=".7"/>
+    <path d="M28 72c4 9 12 14 22 14" stroke="#ff8f9d" stroke-width="2" fill="none" opacity=".45"/>
+    <path d="M44 25h12v9c14 6 22 18 22 32 0 18-12 26-28 26S22 84 22 66c0-14 8-26 22-32z" fill="url(#pgG)" stroke="#e6f6ff" stroke-opacity=".55" stroke-width="1.6"/>
+    <path d="M31 46c-5 6-7 13-7 20" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".75"/><path d="M69 69c1 6-2 11-6 14" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".38"/>
+    <rect x="41" y="9" width="18" height="16" rx="3" fill="url(#pgC)"/><path d="M43 13h14M43 17h14M43 21h14" stroke="#4a2d16" stroke-width=".8" opacity=".55"/><rect x="39" y="22" width="22" height="5" rx="2" fill="#5e3b20"/>
+    <circle cx="58" cy="76" r="2.2" fill="#fff" opacity=".7"/><circle cx="45" cy="81" r="1.4" fill="#fff" opacity=".5"/><circle cx="52" cy="70" r="1" fill="#fff" opacity=".55"/></svg>`,
+  berries: `<svg viewBox="0 0 100 100"><defs><radialGradient id="brB" cx=".32" cy=".3" r=".75"><stop offset="0" stop-color="#ff7a8a"/><stop offset=".35" stop-color="#d31834"/><stop offset=".85" stop-color="#7d0718"/><stop offset="1" stop-color="#4a0410"/></radialGradient>
+    <linearGradient id="brL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fd36a"/><stop offset="1" stop-color="#2f6e2a"/></linearGradient></defs>
+    <ellipse cx="52" cy="92" rx="30" ry="4.5" fill="#000" opacity=".42"/>
+    <path d="M50 30c10-14 26-16 36-10-10 10-24 14-36 10z" fill="url(#brL)"/><path d="M52 29c9-5 19-7 30-8" stroke="#245a22" stroke-width="1" fill="none" opacity=".7"/>
+    <path d="M50 30c-8-12-22-14-30-8 8 8 20 12 30 8z" fill="url(#brL)"/><path d="M48 29c-7-4-15-6-25-6" stroke="#245a22" stroke-width="1" fill="none" opacity=".7"/>
+    <path d="M50 30c-2 6-6 12-12 18M50 30c3 6 8 11 12 16M50 30v16" stroke="#3b5e22" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <circle cx="34" cy="58" r="15" fill="url(#brB)"/><circle cx="62" cy="54" r="15" fill="url(#brB)"/><circle cx="48" cy="78" r="15" fill="url(#brB)"/><circle cx="74" cy="76" r="13" fill="url(#brB)"/>
+    <g fill="#fff"><ellipse cx="29" cy="52" rx="4.2" ry="3" opacity=".85"/><ellipse cx="57" cy="48" rx="4.2" ry="3" opacity=".85"/><ellipse cx="43" cy="72" rx="4.2" ry="3" opacity=".85"/><ellipse cx="70" cy="71" rx="3.6" ry="2.6" opacity=".8"/>
+    <circle cx="39" cy="63" r="1" opacity=".35"/><circle cx="66" cy="60" r="1" opacity=".35"/><circle cx="53" cy="84" r="1" opacity=".35"/></g>
+    <g fill="#3a0209" opacity=".35"><circle cx="38" cy="66" r="1"/><circle cx="31" cy="62" r=".9"/><circle cx="66" cy="58" r="1"/><circle cx="52" cy="82" r="1"/><circle cx="77" cy="80" r=".9"/></g></svg>`,
+  rope: `<svg viewBox="0 0 100 100" fill="none" stroke-linecap="round"><defs><linearGradient id="rpS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8a86c"/><stop offset=".55" stop-color="#a06c36"/><stop offset="1" stop-color="#5e3a1c"/></linearGradient></defs>
+    <ellipse cx="50" cy="90" rx="34" ry="5" fill="#000" stroke="none" opacity=".42"/>
+    <ellipse cx="50" cy="60" rx="34" ry="24" stroke="#4a2c14" stroke-width="13"/><ellipse cx="50" cy="58" rx="34" ry="24" stroke="url(#rpS)" stroke-width="9"/>
+    <ellipse cx="50" cy="58" rx="20" ry="13" stroke="#4a2c14" stroke-width="10"/><ellipse cx="50" cy="58" rx="20" ry="13" stroke="url(#rpS)" stroke-width="7"/>
+    <ellipse cx="50" cy="58" rx="34" ry="24" stroke="#f2cf98" stroke-width="2" stroke-dasharray="4 6" opacity=".75"/><ellipse cx="50" cy="58" rx="20" ry="13" stroke="#e7bd82" stroke-width="1.6" stroke-dasharray="3 5" opacity=".7"/>
+    <path d="M24 46c8-9 22-13 34-12" stroke="#fff3dc" stroke-width="2" opacity=".45"/>
+    <path d="M78 46c10-8 14-20 8-28" stroke="#4a2c14" stroke-width="11"/><path d="M78 46c10-8 14-20 8-28" stroke="url(#rpS)" stroke-width="7"/><path d="M78 46c10-8 14-20 8-28" stroke="#f2cf98" stroke-width="1.8" stroke-dasharray="4 6" opacity=".75"/>
+    <path d="M84 17l3-5M87 18l4-3M85 16l1-6" stroke="#d8a86c" stroke-width="1.2"/></svg>`,
+  crystal: `<svg viewBox="0 0 100 100"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d6f0ff"/><stop offset=".45" stop-color="#4aa8ff"/><stop offset="1" stop-color="#173f8f"/></linearGradient>
+    <radialGradient id="cgI" cx=".5" cy=".6" r=".5"><stop offset="0" stop-color="#bff1ff" stop-opacity=".9"/><stop offset="1" stop-color="#4aa8ff" stop-opacity="0"/></radialGradient></defs>
+    <ellipse cx="50" cy="92" rx="30" ry="4.5" fill="#000" opacity=".42"/><ellipse cx="50" cy="88" rx="26" ry="4" fill="#58b8ff" opacity=".25"/>
+    <path d="M24 40l12 14-4 34-12-8-6-26z" fill="#1f5fbf"/><path d="M24 40l12 14-10 2z" fill="#a9dcff"/><path d="M14 54l6 26 12 8" stroke="#0e2f66" stroke-width="1" fill="none" opacity=".5"/>
+    <path d="M76 34l14 18-4 30-14 8-2-36z" fill="#2f7fd6"/><path d="M76 34l14 18-14 2z" fill="#d6f0ff"/><path d="M90 52l-4 30-14 8" stroke="#0e2f66" stroke-width="1" fill="none" opacity=".5"/>
+    <path d="M50 6l16 30-6 54H40l-6-54z" fill="url(#cg)"/><path d="M50 6l16 30-16 8-16-8z" fill="#e6f7ff"/><path d="M50 44l10 46H40z" fill="#2a6fd0" opacity=".45"/>
+    <ellipse cx="50" cy="62" rx="10" ry="18" fill="url(#cgI)"/><path d="M50 44v46" stroke="#e6f6ff" stroke-width="1.6" opacity=".8"/><path d="M36 38l4 50" stroke="#fff" stroke-width="1.2" opacity=".35"/>
+    <path d="M57 18l2-6 2 6 6 2-6 2-2 6-2-6-6-2z" fill="#fff"/><circle cx="57" cy="20" r="5" fill="#fff" opacity=".25"/></svg>`,
 };
 const items = [
   { id: 'heiltrank', name: 'Heiltrank', n: 5, art: 'potion', rc: '#ff5a6e55', tip: 'Stellt 20 Leben wieder her', use: { hp: 20 } },
@@ -876,16 +951,29 @@ function runePath(r) {
   }
   return d;
 }
+const shade = (hex, amt) => { const n = parseInt(hex.slice(1), 16), f = v => Math.round(amt >= 0 ? v + (255 - v) * amt : v * (1 + amt));
+  return '#' + [n >> 16 & 255, n >> 8 & 255, n & 255].map(v => f(v).toString(16).padStart(2, '0')).join(''); };
+let treeId = 0;
 function treesSVG(w, h, seed, n, col, yb, hmin, hmax, wmin, wmax, par = 'none') {
-  const r = rng(seed); let s = '';
+  const r = rng(seed), id = 't' + (++treeId); let trunks = '', branches = '', crowns = '', lights = '';
   for (let i = 0; i < n; i++) {
-    const x = r() * w, tw = wmin + r() * (wmax - wmin), th = h * (hmin + r() * (hmax - hmin)), top = yb - th;
-    s += `<path d="M${x - tw / 2} ${yb}L${x - tw * .28} ${top}L${x + tw * .28} ${top}L${x + tw / 2} ${yb}Z"/>`;
-    for (let b = 0; b < 3; b++) { const by = top + th * (.25 + r() * .4), dir = r() < .5 ? -1 : 1, bl = 30 + r() * 60;
-      s += `<path d="M${x} ${by}Q${x + dir * bl * .5} ${by - 10} ${x + dir * bl} ${by - 30 - r() * 30}" stroke="${col}" stroke-width="${3 + r() * 4}" fill="none"/>`; }
-    for (let k = 0; k < 7; k++) s += `<circle cx="${x + (r() - .5) * tw * 6}" cy="${top + (r() - .2) * 60}" r="${20 + r() * 45}"/>`;
+    const x = r() * w, tw = wmin + r() * (wmax - wmin), th = h * (hmin + r() * (hmax - hmin)), top = yb - th, lean = (r() - .5) * tw * .6;
+    trunks += `<path d="M${x - tw * .62} ${yb}C${x - tw * .5} ${yb - th * .12} ${x - tw * .36} ${yb - th * .2} ${x - tw * .3 + lean * .5} ${yb - th * .5}L${x - tw * .22 + lean} ${top}L${x + tw * .22 + lean} ${top}L${x + tw * .3 + lean * .5} ${yb - th * .5}C${x + tw * .36} ${yb - th * .2} ${x + tw * .5} ${yb - th * .12} ${x + tw * .62} ${yb}Z"/>`;
+    for (let b = 0; b < 4; b++) { const by = top + th * (.15 + r() * .45), dir = r() < .5 ? -1 : 1, bl = 30 + r() * 70, bx = x + lean * (1 - (by - top) / th);
+      branches += `<path d="M${bx} ${by}Q${bx + dir * bl * .5} ${by - 8} ${bx + dir * bl} ${by - 26 - r() * 34}" stroke-width="${(2.5 + r() * 4).toFixed(1)}"/>`; }
+    for (let k = 0; k < 16; k++) { const cx = x + lean + (r() - .5) * tw * 6, cy = top + (r() - .25) * 70, rr = 10 + r() * 30;
+      crowns += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${rr.toFixed(1)}"/>`;
+      if (r() < .55) lights += `<circle cx="${(cx + rr * .3).toFixed(1)}" cy="${(cy - rr * .35).toFixed(1)}" r="${(rr * .55).toFixed(1)}"/>`; }
   }
-  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="${par}"><g fill="${col}">${s}</g></svg>`;
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="${par}"><defs>
+    <linearGradient id="${id}b" x1="0" x2="1"><stop offset="0" stop-color="${shade(col, -.35)}"/><stop offset=".55" stop-color="${col}"/><stop offset="1" stop-color="${shade(col, .16)}"/></linearGradient>
+    <filter id="${id}l" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="3" seed="${seed}"/><feDisplacementMap in="SourceGraphic" scale="22" xChannelSelector="R" yChannelSelector="G"/></filter>
+    <filter id="${id}k" x="-5%" y="-2%" width="110%" height="104%"><feTurbulence type="fractalNoise" baseFrequency=".08 .012" numOctaves="2" seed="${seed + 3}"/><feDisplacementMap in="SourceGraphic" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter>
+   </defs>
+   <g fill="url(#${id}b)" filter="url(#${id}k)">${trunks}</g>
+   <g stroke="${col}" fill="none" stroke-linecap="round" filter="url(#${id}k)">${branches}</g>
+   <clipPath id="${id}c">${crowns}</clipPath>
+   <g filter="url(#${id}l)"><g fill="${col}">${crowns}</g><g fill="${shade(col, .07)}" opacity=".38" clip-path="url(#${id}c)">${lights}</g></g></svg>`;
 }
 function fernsSVG(w, h, seed) {
   const r = rng(seed); let s = '';
@@ -940,22 +1028,34 @@ function pedestalSVG() {
   for (let i = 0; i < 72; i++) { const a = i * 5 * Math.PI / 180, l = i % 6 === 0 ? 14 : 6; floorT += `<line x1="${Math.cos(a) * 214}" y1="${Math.sin(a) * 214}" x2="${Math.cos(a) * (214 - l)}" y2="${Math.sin(a) * (214 - l)}"/>`; }
   for (let i = 0; i < 16; i++) { const a = i * 22.5; floorG += `<g transform="rotate(${a}) translate(-5 -178)"><path d="${runePath(r)}" fill="none" stroke-width="2"/></g>`; }
   let fastG = ''; for (let i = 0; i < 12; i++) fastG += `<g transform="rotate(${i * 30}) translate(-5 -112)"><path d="${runePath(r)}" fill="none" stroke-width="2.6"/></g>`;
-  return `<svg viewBox="0 0 580 196">
+  const svgOpen = cls => `<svg class="${cls}" viewBox="0 0 580 196">`;
+  // drei Ebenen: Stein (statisch, eigene Ebene), Animation, Moos (statisch, eigene Ebene)
+  return svgOpen('pb') + `
    <defs>
-    <linearGradient id="stoneSide" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a4d5c"/><stop offset=".5" stop-color="#253541"/><stop offset="1" stop-color="#131d26"/></linearGradient>
+    <linearGradient id="stoneSide" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4d6373"/><stop offset=".5" stop-color="#324553"/><stop offset="1" stop-color="#1a2731"/></linearGradient>
     <linearGradient id="stoneSide2" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset=".35" stop-color="#000" stop-opacity="0"/><stop offset=".7" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></linearGradient>
-    <radialGradient id="stoneTop" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="#5a6f7c"/><stop offset=".7" stop-color="#3b4e5b"/><stop offset="1" stop-color="#2b3a46"/></radialGradient>
+    <radialGradient id="stoneTop" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="#74899a"/><stop offset=".7" stop-color="#4f6474"/><stop offset="1" stop-color="#3a4c59"/></radialGradient>
+    <filter id="rockTex" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".045 .1" numOctaves="4" seed="7" result="n"/><feDiffuseLighting in="n" surfaceScale="2.6" diffuseConstant="1.15" lighting-color="#e2f1fa" result="l"><feDistantLight azimuth="235" elevation="40"/></feDiffuseLighting><feComposite in="l" in2="SourceAlpha" operator="in" result="l2"/><feBlend in="SourceGraphic" in2="l2" mode="multiply"/></filter>
+    <filter id="rockTop" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".03 .075" numOctaves="3" seed="11" result="n"/><feDiffuseLighting in="n" surfaceScale="1.3" diffuseConstant="1.12" lighting-color="#e2f1fa" result="l"><feDistantLight azimuth="235" elevation="48"/></feDiffuseLighting><feComposite in="l" in2="SourceAlpha" operator="in" result="l2"/><feBlend in="SourceGraphic" in2="l2" mode="multiply"/></filter>
+    <filter id="mossFuzz" x="-5%" y="-40%" width="110%" height="180%"><feTurbulence type="fractalNoise" baseFrequency=".4" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" xChannelSelector="R" yChannelSelector="G"/></filter>
+    <radialGradient id="wetSheen" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffffff" stop-opacity=".2"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
     <radialGradient id="water" cx=".5" cy=".5" r=".5"><stop offset="0" style="stop-color:var(--aura);stop-opacity:.55"/><stop offset=".75" style="stop-color:var(--aura);stop-opacity:.18"/><stop offset="1" style="stop-color:var(--aura);stop-opacity:0"/></radialGradient>
    </defs>
    <ellipse cx="290" cy="178" rx="290" ry="18" fill="#000" opacity=".55"/>
-   <path d="M28 74 L36 150 Q290 222 544 150 L552 74 Z" fill="url(#stoneSide)"/>
+   <path d="M28 74 L36 150 Q290 222 544 150 L552 74 Z" fill="url(#stoneSide)" filter="url(#rockTex)"/>
    <path d="M28 74 L36 150 Q290 222 544 150 L552 74 Z" fill="url(#stoneSide2)"/>
    <path d="M70 100l18 48M150 112l-8 50M232 118l10 52M330 120l-6 50M420 112l12 46M500 98l-14 44" stroke="#0b141b" stroke-width="2" opacity=".6"/>
+   <path d="M71.5 100l18 48M151.5 112l-8 50M233.5 118l10 52M331.5 120l-6 50M421.5 112l12 46M501.5 98l-14 44" stroke="#a9c1cf" stroke-width="1" opacity=".22"/>
    <path d="M36 150 Q290 222 544 150" fill="none" stroke="#8ff0ff" stroke-width="1.5" opacity=".25"/>
-   ${runes}${pebbles}
-   <ellipse cx="290" cy="74" rx="262" ry="52" fill="url(#stoneTop)"/>
+   ${pebbles}
+   <ellipse cx="290" cy="74" rx="262" ry="52" fill="url(#stoneTop)" filter="url(#rockTop)"/>
    <ellipse cx="290" cy="74" rx="262" ry="52" fill="none" stroke="#9db4c2" stroke-width="2" opacity=".35"/>
    <ellipse cx="290" cy="74" rx="236" ry="44" fill="url(#water)"/>
+   <ellipse cx="290" cy="74" rx="236" ry="44" fill="none" stroke="#08131c" stroke-width="3" opacity=".45"/>
+   <ellipse cx="236" cy="60" rx="150" ry="20" fill="url(#wetSheen)"/>
+  </svg>` +
+    svgOpen('pa') + `
+   ${runes}
    <g class="rim"><ellipse cx="290" cy="74" rx="244" ry="47" fill="none" stroke-width="3" opacity=".9" style="stroke:var(--aura);filter:drop-shadow(0 0 8px var(--aura))"/></g>
    <g transform="translate(290 74) scale(1 .2)"><g class="floor" stroke="#a6ecff" opacity=".7">${floorT}<circle r="214" fill="none" stroke-width="2"/><circle r="150" fill="none" stroke-width="1.5" stroke-dasharray="30 12 4 12"/></g><g class="floor2" stroke="#d6f8ff" opacity=".75">${floorG}</g></g>
    <g class="chg"><ellipse cx="290" cy="74" rx="236" ry="44" fill="url(#water)"/><ellipse cx="290" cy="74" rx="244" ry="47" fill="none" stroke-width="6" style="stroke:var(--aura);filter:blur(4px)"/></g>
@@ -963,7 +1063,9 @@ function pedestalSVG() {
    <ellipse class="ripple" cx="290" cy="74" rx="220" ry="40" fill="none" stroke="#c6f6ff" stroke-width="1.6"/>
    <ellipse class="ripple" style="animation-delay:1.4s" cx="290" cy="74" rx="220" ry="40" fill="none" stroke="#c6f6ff" stroke-width="1.6"/>
    <ellipse class="ripple" style="animation-delay:2.8s" cx="290" cy="74" rx="220" ry="40" fill="none" stroke="#c6f6ff" stroke-width="1.6"/>
-   ${moss}
+  </svg>` +
+    svgOpen('pm') + `
+   <g filter="url(#mossFuzz)">${moss}</g>
   </svg>`;
 }
 const LEAF_SVG = c => `<svg viewBox="0 0 40 40"><path d="M6 34C6 18 18 6 34 6c0 16-12 28-28 28z" fill="${c}"/><path d="M8 32C16 22 24 14 32 8" stroke="#0004" stroke-width="1.6" fill="none"/></svg>`;
@@ -1049,7 +1151,7 @@ function renderGrid() {
         <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#eaf4ff" stroke-width="2.4" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
         <span class="buddy" title="Begleitet dich"><svg viewBox="0 0 24 24" fill="#06223a"><use href="#i-paw"/></svg></span>`;
       const rd = RIGDEF[t.rig], v = makeView(b.querySelector('.in'), [112, 112], 'p', t.rig, portraitRect(rd), rd.img);
-      if (v) { v.p.tint = 0.4; v.size(SCALE); portraitViews.push(v); }
+      if (v) { Object.assign(v.p, { tint: 0.4, rim: 0.22 }); v.silCol = hexRgb(t.aura); v.size(SCALE); portraitViews.push(v); }
       b.addEventListener('click', () => select(i));
     } else {
       b.classList.add('empty'); b.setAttribute('aria-label', 'Freier Platz, Wesen hinzufügen');
@@ -1334,7 +1436,7 @@ loadAssets().then(() => {
   requestAnimationFrame(() => requestAnimationFrame(() => pipEl.classList.remove('notrans')));
   const rd = RIGDEF[team[0].rig];
   bigView = makeView($('#creature'), [600, 632], team[0].rig, team[0].rig, stageRect(rd), rd.img);
-  if (bigView) bigView.p.tint = 1;
+  if (bigView) { Object.assign(bigView.p, { tint: 1, rim: 0.42, ao: 0.28 }); bigView.refl = true; }
   fit();
   placePip(true);
   requestAnimationFrame(frame);
