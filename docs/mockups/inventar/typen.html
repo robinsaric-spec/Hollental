@@ -67,6 +67,10 @@ svg{display:block}
 .sizes figcaption{font-family:var(--ui-c);font-weight:600;font-size:12px;letter-spacing:.16em;color:var(--ink-3)}
 .vsep{width:1px;align-self:stretch;margin:6px 0 10px;background:var(--line)}
 .uiex{display:flex;flex-direction:column;gap:14px}
+.nameex{display:flex;align-items:center;gap:16px;margin-top:4px}
+.nameex .nm{font-family:var(--display);font-size:38px;font-weight:600;letter-spacing:.06em;color:#eef2f4;text-shadow:0 1px 0 #000}
+.nameex .ty{width:52px;height:52px}
+.uiex .note{font-size:15px;color:var(--ink-3)}
 .uiex .k{font-family:var(--ui-c);font-weight:600;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3)}
 .chips{display:flex;gap:8px;flex-wrap:wrap;max-width:560px}
 .chip{display:inline-flex;align-items:center;gap:8px;padding:3px 11px 3px 3px;border-radius:2px;border:1px solid var(--line);background:#0a1117cc;font-family:var(--ui-c);font-weight:600;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);transition:border-color .2s,color .2s}
@@ -121,7 +125,7 @@ svg{display:block}
       <div class="vsep"></div>
       <div class="sizes" id="sizes"></div>
       <div class="vsep"></div>
-      <div class="uiex"><div class="k">Im Inventar als Typ-Kennzeichen</div><div class="chips" id="chips"></div></div>
+      <div class="uiex"><div class="k">Im Inventar: groß neben dem Namen</div><div class="nameex"><span class="nm">Moosmolch</span><span class="ty" id="exA"></span><span class="ty" id="exB"></span></div><p class="note">Ohne Typ-Bezeichnung, der Name erscheint beim Darüberfahren.</p></div>
     </div>
   </section>
 </div></div>
@@ -482,11 +486,11 @@ function select(id) {
   $('#sel').style.setProperty('--tc', t.col);
   $('#selName').textContent = t.name; $('#selText').textContent = t.motion;
   const sz = $('#sizes'); sz.innerHTML = '';
-  [64, 44, 32, 24, 20].forEach(px => {
+  [64, 52, 46, 34, 28].forEach(px => {
     const f = document.createElement('figure'), h = document.createElement('span');
     h.style.cssText = `width:${px}px;height:${px}px`; f.appendChild(h);
     f.insertAdjacentHTML('beforeend', `<figcaption>${px} px</figcaption>`); sz.appendChild(f);
-    TypeFX.mount(h, id, { mode: px >= 44 ? 'full' : 'core', ring: px < 44 });
+    TypeFX.mount(h, id, { mode: px >= 64 ? 'full' : 'core', ring: px < 64 });
   });
   TypeFX.flare(sz);
 }
@@ -499,10 +503,8 @@ function build() {
     g.appendChild(c);
     TypeFX.mount(c.querySelector('.med'), t.id, { mode: 'full', hover: c });
     c.addEventListener('click', () => { select(t.id); TypeFX.flare(c); });
-    const chip = document.createElement('span'); chip.className = 'chip'; chip.style.setProperty('--tc', t.col);
-    chip.innerHTML = `<span class="ty"></span>${t.name}`; $('#chips').appendChild(chip);
-    TypeFX.mount(chip.querySelector('.ty'), t.id, { mode: 'core', ring: true, hover: chip });
   });
+  ['flut', 'pflanze'].forEach((id, k) => { const el = $(k ? '#exB' : '#exA'); el.title = TYPE[id].name; TypeFX.mount(el, id, { mode: 'core', ring: true }); });
 }
 TypeFX.init(TYPE_TEX, { scale: () => SCALE }).then(() => {
   build(); select(cur);

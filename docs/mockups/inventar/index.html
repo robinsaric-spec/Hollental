@@ -327,10 +327,20 @@ kbd{font-family:var(--ui-c);font-weight:600;font-size:13px;min-width:28px;text-a
 /* ---------- Typ-Symbole (animiert, siehe TypeFX) ---------- */
 .ty{display:block;flex:none;width:24px;height:24px}
 .chip .ty{width:24px;height:24px}
-.chip.tchip:hover{border-color:color-mix(in srgb,var(--tc) 55%,#233441);color:var(--ink)}
 .chip.stage{padding:3px 11px;color:var(--cu-3);border-color:#a8714a77}
-.card .els{display:flex;gap:6px;margin-top:3px}
-.card .els .ty{width:28px;height:28px}
+.card .els{display:flex;gap:8px;margin-top:4px}
+.card .els .ty{width:34px;height:34px}
+/* Typ-Symbole groß neben dem Namen (ohne Typ-Bezeichnung) */
+.dhead{display:flex;align-items:center;gap:16px;width:max-content}
+.tys{display:flex;gap:8px;flex:none}
+.dhead .ty{width:52px;height:52px}
+.d-text .chips{margin-top:12px}
+.tline{display:flex;align-items:center;gap:14px;margin-top:6px}
+.tline .ptitle{margin-top:0}
+.tline .ty{width:46px;height:46px}
+.linfo .tline{justify-content:center}
+.linfo .tline .ty{width:44px;height:44px}
+.ty.unk{border:1px dashed #36505f;border-radius:50%;display:grid;place-items:center;color:#56697a;font-family:var(--ui-c);font-weight:600;font-size:18px}
 .por .pcv{position:absolute;inset:0}
 
 /* ---------- gemeinsame Bausteine der Menüs ---------- */
@@ -367,29 +377,28 @@ kbd{font-family:var(--ui-c);font-weight:600;font-size:13px;min-width:28px;text-a
 .por-c{flex:none;border-radius:50%;background-color:#15242e;background-repeat:no-repeat;box-shadow:0 0 0 2px #05090d,0 0 0 3px var(--cu-2)}
 
 /* ---------- Dex ---------- */
-.typebar{position:absolute;left:0;top:60px;width:900px;height:42px;display:flex;align-items:center;gap:6px}
-.typebar .tb-k{font-family:var(--ui-c);font-weight:600;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3);margin-right:8px}
-.tbtn{position:relative;width:42px;height:42px;border-radius:2px;border:1px solid var(--line);background:#0a1117cc;display:grid;place-items:center;transition:border-color .2s,background .2s}
-.tbtn .ty{width:32px;height:32px}
+.typebar{position:absolute;left:0;top:58px;width:900px;height:58px;display:flex;align-items:center;gap:6px}
+.tbtn{position:relative;flex:1 1 0;height:58px;border-radius:2px;border:1px solid var(--line);background:#0a1117cc;display:grid;place-items:center;transition:border-color .2s,background .2s}
+.tbtn .ty{width:50px;height:50px}
 .tbtn:hover{border-color:color-mix(in srgb,var(--tc) 50%,#233441)}
 .tbtn[aria-pressed="true"]{border-color:var(--tc);background:color-mix(in srgb,var(--tc) 12%,#0a1117)}
 .tbtn::after{content:attr(data-name);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%) translateY(4px);padding:5px 10px;border-radius:2px;background:#0c151df5;border:1px solid var(--line-2);font-family:var(--ui-c);font-weight:600;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);white-space:nowrap;opacity:0;pointer-events:none;transition:.18s var(--ease-out);z-index:5}
 .tbtn:hover::after,.tbtn:focus-visible::after{opacity:1;transform:translateX(-50%)}
-.dexgrid{position:absolute;left:0;top:116px;width:900px;display:grid;grid-template-columns:repeat(6,140px);grid-auto-rows:150px;gap:12px}
+.dexgrid{position:absolute;left:0;top:128px;width:900px;display:grid;grid-template-columns:repeat(6,140px);grid-auto-rows:150px;gap:12px}
 .dtile{position:relative;border-radius:2px;background:linear-gradient(180deg,#111c26,#0c151d);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding-top:6px;transition:border-color .2s,background .2s}
 .dtile:hover{border-color:var(--line-2)}
 .dtile[aria-selected="true"]{border-color:#3f7f92;background:linear-gradient(180deg,#132532,#0e1b25)}
 .dtile .dno{position:absolute;left:9px;top:7px;font-family:var(--ui-c);font-weight:600;font-size:12px;letter-spacing:.14em;color:var(--ink-3)}
 .dtile .dpor{width:72px;height:72px}
 .dtile .dnm{font-size:15px;font-weight:600;letter-spacing:.01em;white-space:nowrap}
-.dtile .dels{display:flex;gap:5px;height:22px}
-.dtile .dels .ty{width:22px;height:22px}
+.dtile .dels{display:flex;gap:6px;height:28px}
+.dtile .dels .ty{width:28px;height:28px}
 .dtile.unk{background:repeating-linear-gradient(135deg,#0c151c 0 10px,#0b131a 10px 20px)}
 .dtile.unk .dpor{display:grid;place-items:center;background:#0a1117;box-shadow:0 0 0 1px #1e2c37;color:#2c3c49}
 .dtile.unk .dpor svg{width:50px;height:50px}
 .dtile.unk:hover .dpor{color:#364a59}
 .dtile.unk .dnm{font-family:var(--ui-c);font-size:14px;letter-spacing:.24em;color:#4b5d6d}
-.dexempty{position:absolute;left:0;top:116px;width:900px;height:160px;display:grid;place-items:center;border:1px dashed var(--line-2);border-radius:3px;font-family:var(--ui-c);font-weight:600;font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)}
+.dexempty{position:absolute;left:0;top:128px;width:900px;height:160px;display:grid;place-items:center;border:1px dashed var(--line-2);border-radius:3px;font-family:var(--ui-c);font-weight:600;font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)}
 .dexempty[hidden]{display:none}
 .dexinfo{left:920px;top:60px;width:546px;height:726px;background:radial-gradient(ellipse 70% 42% at 50% 28%,color-mix(in srgb,var(--dxa,#45c9e6) 12%,#0f1c26),#080e13 75%);transition:background .8s}
 .dexstage{position:absolute;left:0;top:0;width:546px;height:400px;overflow:hidden}
@@ -661,7 +670,7 @@ kbd{font-family:var(--ui-c);font-weight:600;font-size:13px;min-width:28px;text-a
           <div class="layer d-near" id="dNear"></div>
           <div class="scrim"></div>
           <div class="d-text">
-            <h3 id="dName"></h3>
+            <div class="dhead"><h3 id="dName"></h3><span class="tys" id="dTys"></span></div>
             <div class="chips" id="dChips"></div>
             <div class="lvrow"><span class="lvl" id="dLv"></span><span class="ep" id="dEp"></span></div>
             <div class="eptrack"><div class="epfill" id="dEpF"></div></div>
@@ -707,7 +716,7 @@ kbd{font-family:var(--ui-c);font-weight:600;font-size:13px;min-width:28px;text-a
           </div>
           <div class="dex-text">
             <div class="pno" id="dexNo"></div>
-            <h3 class="ptitle" id="dexName"></h3>
+            <div class="tline"><h3 class="ptitle" id="dexName"></h3><span class="tys" id="dexTys"></span></div>
             <div class="chips" id="dexChips"></div>
             <p class="desc" id="dexDesc"></p>
             <dl class="facts" id="dexFacts"></dl>
@@ -739,7 +748,7 @@ kbd{font-family:var(--ui-c);font-weight:600;font-size:13px;min-width:28px;text-a
           <div class="lin">
             <div class="big por-c" id="liPor"></div>
             <div class="itx">
-              <h3 class="ptitle" id="liName"></h3>
+              <div class="tline"><h3 class="ptitle" id="liName"></h3><span class="tys" id="liTys"></span></div>
               <div class="chips" id="liChips"></div>
               <dl class="facts" id="liFacts"></dl>
             </div>
@@ -1935,8 +1944,8 @@ function porCss(sp, px) {
 const por = (sp, px, cls = '') => `<span class="por-c bg-${sp.rig} ${cls}" style="${porCss(sp, px)}"></span>`;
 function setPor(el, sp, px) { el.className = el.className.replace(/\bbg-\S+/g, '').trim() + ' bg-' + sp.rig; el.style.cssText = porCss(sp, px); }
 
-/* Typ-Kennzeichen mit animiertem Symbol */
-const typeChip = id => `<span class="chip tchip" style="--tc:${TYPE[id].col}"><span class="ty" data-ty="${id}"></span>${TYPE[id].name}</span>`;
+/* Typ-Symbole (animiert) ohne Bezeichnung; der Name steht im Tooltip und für Screenreader */
+const typeIcons = types => types.map(t => `<span class="ty" data-ty="${t}" title="${TYPE[t].name}" role="img" aria-label="Typ ${TYPE[t].name}"></span>`).join('');
 const stageChip = sp => `<span class="chip stage" title="Entwicklungsstufe">Stufe ${sp.stage}</span>`;
 function mountTypes(root) {
   root.querySelectorAll('.ty[data-ty]:not([data-m])').forEach(el => { el.dataset.m = 1;
@@ -1996,11 +2005,11 @@ function renderGrid(deal) {
 function updateDetailText(c) {
   const sp = c.sp;
   $('#dName').textContent = sp.name;
-  $('#dChips').innerHTML = sp.types.map(typeChip).join('') + stageChip(sp);
-  mountTypes($('#dChips'));
+  $('#dTys').innerHTML = typeIcons(sp.types); mountTypes($('#dTys'));
+  $('#dChips').innerHTML = stageChip(sp);
   $('#dLv').textContent = 'Level ' + c.lv; $('#dEp').textContent = `EP ${fmt(c.ep)} / ${fmt(c.epMax)}`;
   $('#dDesc').textContent = sp.desc;
-  fadeIn(['#dName', '#dChips', '.lvrow', '#dDesc', '.d-text .stat']);
+  fadeIn(['.dhead', '#dChips', '.lvrow', '#dDesc', '.d-text .stat']);
 }
 
 /* Wechsel: die alte Projektion fällt in den Emitter zusammen, das neue Wesen baut sich als Hologramm auf */
@@ -2099,7 +2108,7 @@ function setTab(id, opening) {
 let dexF = 'alle', dexType = null, dexSel = 1;
 function buildTypeBar() {
   const bar = $('#dexTypes');
-  bar.innerHTML = '<span class="tb-k">Typ</span>' + TYPES.map(t => `<button class="tbtn" data-t="${t.id}" data-name="${t.name}" aria-pressed="false" aria-label="Typ ${t.name}" style="--tc:${t.col}"><span class="ty" data-ty="${t.id}"></span></button>`).join('');
+  bar.innerHTML = TYPES.map(t => `<button class="tbtn" data-t="${t.id}" data-name="${t.name}" aria-pressed="false" aria-label="Typ ${t.name}" style="--tc:${t.col}"><span class="ty" data-ty="${t.id}"></span></button>`).join('');
   mountTypes(bar);
   $$('#dexTypes .tbtn').forEach(b => b.addEventListener('click', () => {
     dexType = dexType === b.dataset.t ? null : b.dataset.t;
@@ -2127,7 +2136,7 @@ function renderDex() {
   });
   mountTypes(g);
   $('#dexEmpty').hidden = shown > 0;
-  $('#dexCount').innerHTML = `<b>${got.size}</b> von ${DEX.length} gefangen`;
+  $('#dexCount').innerHTML = `<b>${got.size}</b> von ${DEX.length} gefangen` + (dexType ? ` · Typ <b>${TYPE[dexType].name}</b>` : '');
 }
 function dexSelect(no, fresh) {
   if (no === dexSel && !fresh) return; dexSel = no;
@@ -2135,13 +2144,14 @@ function dexSelect(no, fresh) {
   const e = DEX[no - 1], has = !!e.sp && caught().has(no);
   $('#dexNo').textContent = pad3(no) + (has ? '' : ' · nicht gefangen');
   $('#dexName').textContent = has ? e.sp.name : '???';
-  $('#dexChips').innerHTML = has ? e.sp.types.map(typeChip).join('') + stageChip(e.sp) : '<span class="chip stage" style="color:var(--ink-3);border-color:var(--line)">Typ unbekannt</span>';
-  mountTypes($('#dexChips'));
+  $('#dexTys').innerHTML = has ? typeIcons(e.sp.types) : '<span class="ty unk" title="Typ unbekannt">?</span><span class="ty unk" title="Typ unbekannt">?</span>';
+  mountTypes($('#dexTys'));
+  $('#dexChips').innerHTML = has ? stageChip(e.sp) : '';
   $('#dexDesc').textContent = has ? e.sp.desc : 'Dieses Wesen hast du noch nicht gefangen. Sobald es dir gelingt, füllt sich der Eintrag.';
   const n = has ? allCreatures().filter(c => c.sp === e.sp).length : 0;
   $('#dexFacts').innerHTML = has ? `<dt>Lebensraum</dt><dd>${e.sp.home.map(h => LOC[h].name).join(', ')}</dd><dt>Im Besitz</dt><dd>${n} ${n === 1 ? 'Wesen' : 'Wesen'}</dd>`
     : '<dt>Lebensraum</dt><dd>Unbekannt</dd>';
-  fadeIn(['#dexNo', '#dexName', '#dexChips', '#dexDesc', '#dexFacts'], 120);
+  fadeIn(['#dexNo', '#dexInfo .tline', '#dexChips', '#dexDesc', '#dexFacts'], 120);
   $('#dexSil').innerHTML = has ? '' : SILS[e.sil];
   $('#dexSil').classList.toggle('show', !has); $('#dexNoData').classList.toggle('show', !has);
   if (!has) $('#dexInfo').style.setProperty('--dxa', '#3d5566');
@@ -2188,13 +2198,14 @@ function renderLagerInfo() {
   info.style.setProperty('--lxa', sp.aura);
   setPor($('#liPor'), sp, 168);
   $('#liName').textContent = sp.name;
-  $('#liChips').innerHTML = sp.types.map(typeChip).join('') + stageChip(sp); mountTypes($('#liChips'));
+  $('#liTys').innerHTML = typeIcons(sp.types); mountTypes($('#liTys'));
+  $('#liChips').innerHTML = stageChip(sp);
   $('#liFacts').innerHTML = `<dt>Level</dt><dd>${c.lv}</dd><dt>Leben</dt><dd>${c.hp} / ${c.hpMax}<span class="minibar"><i style="width:${(c.hp / c.hpMax * 100).toFixed(1)}%"></i></span></dd>
     <dt>EP</dt><dd>${fmt(c.ep)} / ${fmt(c.epMax)}</dd><dt>Gefangen</dt><dd>${LOC[c.from].name}</dd><dt>Platz</dt><dd>${inTeam ? 'Team' : BOXES[boxI].name}</dd>`;
   const mv = $('#liMove'), dis = inTeam ? teamN <= 1 : teamN >= team.length;
   mv.querySelector('span').textContent = inTeam ? 'Ins Lager legen' : 'Ins Team holen';
   mv.setAttribute('aria-disabled', dis); mv.title = dis ? (inTeam ? 'Mindestens ein Wesen bleibt im Team' : 'Das Team ist voll') : '';
-  fadeIn(['#liPor', '#liName', '#liChips', '#liFacts']);
+  fadeIn(['#liPor', '#lInfo .tline', '#liChips', '#liFacts']);
 }
 function toTeam() {
   const s = lagerSel, c = lagerItem(s); if (!c || s.where !== 'box') return;
