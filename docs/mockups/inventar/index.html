@@ -32,8 +32,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 svg{display:block}
 canvas{display:block}
 
-#viewport{position:fixed;inset:0;display:grid;place-items:center}
-#stage{width:1920px;height:1080px;position:relative;transform-origin:center;overflow:hidden;flex:none}
+#viewport{position:fixed;inset:0;overflow:hidden;background:#02070d}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden}
 
 /* ---------- Wald hinter dem Fenster (Platzhalter für die Spielszene) ---------- */
 .world{position:absolute;inset:0;background:
@@ -49,12 +49,17 @@ canvas{display:block}
 
 /* ---------- Roboter Pip ---------- */
 #pip{position:absolute;left:0;top:0;width:230px;height:267px;z-index:60;transform:translate(var(--px,26px),var(--py,4px)) scale(var(--ps,1));transform-origin:50% 50%;transition:transform .9s cubic-bezier(.55,0,.2,1);cursor:pointer}
-#pip .hover{width:100%;height:100%;animation:pipBob 3.4s ease-in-out infinite;transition:transform .35s var(--ease-spring)}
+#pip .hover{width:100%;height:100%;transition:transform .35s var(--ease-spring)}
+#pip.free .hover{animation:pipBob 3.4s ease-in-out infinite}
+#pip .gfx{position:absolute;inset:0;clip-path:circle(420px at 115px 133.5px);transition:clip-path .9s cubic-bezier(.55,0,.2,1)}
+#pip.avatar .gfx{clip-path:circle(89px at 115px 133.5px)}
+#pip.notrans,#pip.notrans .gfx{transition:none!important}
 #pip:hover .hover{transform:scale(1.05) rotate(-3deg)}
 #pip:active .hover{transform:scale(.95)}
 @keyframes pipBob{0%,100%{translate:0 0}50%{translate:0 -9px}}
 #pip canvas,#pip img{width:230px;height:267px;position:absolute;inset:0}
-#pip .shadow{position:absolute;left:62px;right:62px;bottom:-6px;height:18px;border-radius:50%;background:radial-gradient(closest-side,#2fd3c855,transparent);filter:blur(2px);animation:pipShadow 3.4s ease-in-out infinite}
+#pip .shadow{position:absolute;left:62px;right:62px;bottom:-6px;height:18px;border-radius:50%;background:radial-gradient(closest-side,#2fd3c855,transparent);filter:blur(2px);animation:pipShadow 3.4s ease-in-out infinite;transition:opacity .4s}
+#pip.avatar .shadow{animation:none;opacity:0}
 @keyframes pipShadow{50%{transform:scale(.8);opacity:.6}}
 #pip .eyeflash{position:absolute;width:90px;height:90px;border-radius:50%;left:calc(var(--ex) - 45px);top:calc(var(--ey) - 45px);background:radial-gradient(closest-side,#e6fffbcc,#38d9cc66 45%,transparent);opacity:0;pointer-events:none;mix-blend-mode:screen}
 #pip .eyeflash.go{animation:eyeflash .9s ease-out}
@@ -371,8 +376,8 @@ kbd{font-family:inherit;font-size:16px;min-width:30px;text-align:center;padding:
 </svg>
 
 <div id="viewport">
+<div class="world" id="world"></div>
 <div id="stage">
-  <div class="world" id="world"></div>
 
   <section id="win" class="closed" role="dialog" aria-label="Hollental Inventar">
     <svg class="dock" viewBox="0 0 250 250" aria-hidden="true">
@@ -475,7 +480,7 @@ kbd{font-family:inherit;font-size:16px;min-width:30px;text-align:center;padding:
 
   <div id="summonLabel">Pip rufen <kbd>I</kbd></div>
   <div id="pip" role="button" tabindex="0" aria-label="Pip, dein Roboter-Helfer">
-    <div class="hover"><div class="shadow"></div><div id="pipGfx"></div><div class="eyeflash" id="eyeflash"></div></div>
+    <div class="hover"><div class="shadow"></div><div class="gfx" id="pipGfx"></div><div class="eyeflash" id="eyeflash"></div></div>
   </div>
 </div>
 </div>
@@ -502,6 +507,7 @@ const smooth = (e0, e1, x) => { const t = clamp((x - e0) / (e1 - e0), 0, 1); ret
 const easeOut = t => 1 - Math.pow(1 - t, 3);
 function rng(seed){ return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 const NS = 'http://www.w3.org/2000/svg';
+const ASSET = {}, rigs = {}, views = [];
 
 /* =====================================================================
    Rig-Engine: 2D-Mesh-Verformung mit Gewichten (wie Skeleton2D/Polygon2D
@@ -559,6 +565,17 @@ class Rig {
     const I = [], Wt = [], X = [];
     for (let k = 0; k < this.N; k++) {
       const x = this.rx[k], y = this.ry[k];
+      if (d.type === 'lids') {   // mechanisches Auge: pro Spalte gemessene Ober-/Unterkante des sichtbaren Auges
+        const C = d.cols; if (x <= C[0][0] || x >= C[C.length - 1][0]) continue;
+        let i = 1; while (C[i][0] < x) i++;
+        const [x0, u0, l0] = C[i - 1], [x1, u1, l1] = C[i], f = (x - x0) / (x1 - x0);
+        const g0 = (l0 + (l1 - l0) * f) - (u0 + (u1 - u0) * f); if (g0 <= 0.5) continue;
+        const pad = d.pad * Math.min(1, g0 / 20), U = u0 + (u1 - u0) * f - pad, L = l0 + (l1 - l0) * f + pad, gap = L - U;
+        const tk = Math.min(1, gap / d.g0), T = U - d.a * tk, B = L + d.b * tk;
+        if (y <= T || y >= B) continue;
+        const mm = d.m + d.mL * smooth(d.xL[0], d.xL[1], x) - d.mR * smooth(d.xR[0], d.xR[1], x);   // Schließlinie folgt der Plattenneigung
+        I.push(k); Wt.push(1); X.push(T, U, L, B, U + mm * (L - U)); continue;
+      }
       if (d.type === 'blink') {
         const t = -d.tilt * Math.PI / 180, c = Math.cos(t), s = Math.sin(t);
         const dx = x - d.c[0], dy = y - d.c[1], u = dx * c - dy * s, v = dx * s + dy * c;
@@ -584,6 +601,16 @@ class Rig {
     px.set(this.rx); py.set(this.ry);
     for (const d of this.defs) {
       const I = d.I, Wt = d.Wt, n = I.length, mul = d.mul ? (ch[d.mul] ?? 1) : 1;
+      if (d.type === 'lids') {
+        const s = ch.blink; if (s <= 0.002) continue;
+        for (let q = 0; q < n; q++) {
+          const k = I[q], T = d.X[5 * q], U = d.X[5 * q + 1], L = d.X[5 * q + 2], B = d.X[5 * q + 3], Mi = d.X[5 * q + 4], y = this.ry[k];
+          const U2 = U + s * (Mi - U), L2 = L + s * (Mi - L);
+          const y2 = y < U ? T + (y - T) * (U2 - T) / (U - T) : y <= L ? U2 + (y - U) * (L2 - U2) / (L - U) : L2 + (y - L) * (B - L2) / (B - L);
+          py[k] += y2 - y;
+        }
+        continue;
+      }
       if (d.type === 'blink') {
         const s = ch.blink; if (s <= 0.002) continue;
         const tl = d.tilt * Math.PI / 180, cs = Math.cos(tl), sn = Math.sin(tl);
@@ -720,9 +747,9 @@ const FRONDS = [[[784, 214], [604, 80], 26], [[792, 230], [640, 162], 26], [[824
                 [[1008, 214], [976, 114], 20], [[1008, 246], [1044, 206], 18], [[1000, 270], [1040, 290], 18], [[964, 306], [980, 350], 16]];
 const RIGDEF = {
   pip: { W: 870, H: 1018, img: 'robot', glow: 'glow_robot', glowCol: [0.35, 1.0, 0.92], glowAmt: 0.9, anchor: [435, 960], eyeGlow: [524, 267, 98],
-    grid: { n: 56, rx: [[448, 604, 3]], ry: [[174, 352, 3]] },
+    grid: { n: 56, rx: [[446, 606, 2]], ry: [[172, 354, 2]] },
     deform: [
-      { type: 'blink', c: [524, 267], r: [66, 56], tilt: -6, a: 30, b: 22, m: 0.55 },
+      { type: 'lids', cols: [[460,258,258],[464,245,271],[467,242,289],[470,240,295],[473,239,301],[476,238,305],[479,237,308],[482,235,311],[485,233,313],[488,232,316],[491,231,318],[494,229,319],[497,227,321],[500,225,322],[503,223,321],[506,223,321],[509,221,320],[512,219,319],[515,218,319],[518,216,318],[521,214,317],[524,212,317],[527,211,316],[530,209,315],[533,207,315],[536,205,315],[539,204,314],[542,203,314],[545,204,313],[548,205,313],[551,206,312],[554,207,312],[557,209,311],[560,211,311],[563,213,311],[566,215,311],[569,218,310],[572,221,307],[575,225,303],[578,229,299],[581,234,294],[584,240,288],[587,249,279],[591,264,264]], a: 30, b: 22, g0: 80, pad: 4, m: 0.55, mL: 0.32, xL: [486, 466], mR: 0.28, xR: [566, 584] },
       { type: 'rot', p: [204, 382], mask: MK.mul(MK.poly([[0, 330], [216, 330], [216, 640], [0, 640]], 3), MK.rampX(216, 192)), amp: 5, per: 2.3, mul: 'fin' },
       { type: 'rot', p: [710, 376], mask: MK.mul(MK.poly([[688, 330], [870, 330], [870, 615], [688, 615]], 3), MK.rampX(692, 716)), amp: -5, per: 2.3, mul: 'fin' },
       { type: 'move', mask: MK.poly([[226, 746], [350, 746], [350, 934], [226, 934]], 5), dy: 14, per: 3.4, ph: 0.9 },
@@ -799,7 +826,16 @@ const NAV = [
    Bühne skalieren
    ===================================================================== */
 let SCALE = 1;
-function fit() { SCALE = Math.min(innerWidth / 1920, innerHeight / 1080); $('#stage').style.transform = `scale(${SCALE})`; views.forEach(v => v.size(SCALE)); }
+function fit() {
+  const vw = document.documentElement.clientWidth || innerWidth, vh = document.documentElement.clientHeight || innerHeight;
+  if (!vw || !vh) return;
+  SCALE = Math.min(vw / 1920, vh / 1080);
+  $('#stage').style.transform = `translate(${((vw - 1920 * SCALE) / 2).toFixed(2)}px, ${((vh - 1080 * SCALE) / 2).toFixed(2)}px) scale(${SCALE})`;
+  views.forEach(v => v.size(SCALE));
+}
+fit(); addEventListener('resize', fit);
+if (window.ResizeObserver) new ResizeObserver(fit).observe(document.documentElement);
+if (window.visualViewport) visualViewport.addEventListener('resize', fit);
 
 /* =====================================================================
    Dekor-Generatoren (Wald, Runen, Halo, Sockel)
@@ -814,7 +850,7 @@ function runePath(r) {
   }
   return d;
 }
-function treesSVG(w, h, seed, n, col, yb, hmin, hmax, wmin, wmax) {
+function treesSVG(w, h, seed, n, col, yb, hmin, hmax, wmin, wmax, par = 'none') {
   const r = rng(seed); let s = '';
   for (let i = 0; i < n; i++) {
     const x = r() * w, tw = wmin + r() * (wmax - wmin), th = h * (hmin + r() * (hmax - hmin)), top = yb - th;
@@ -823,7 +859,7 @@ function treesSVG(w, h, seed, n, col, yb, hmin, hmax, wmin, wmax) {
       s += `<path d="M${x} ${by}Q${x + dir * bl * .5} ${by - 10} ${x + dir * bl} ${by - 30 - r() * 30}" stroke="${col}" stroke-width="${3 + r() * 4}" fill="none"/>`; }
     for (let k = 0; k < 7; k++) s += `<circle cx="${x + (r() - .5) * tw * 6}" cy="${top + (r() - .2) * 60}" r="${20 + r() * 45}"/>`;
   }
-  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><g fill="${col}">${s}</g></svg>`;
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="${par}"><g fill="${col}">${s}</g></svg>`;
 }
 function fernsSVG(w, h, seed) {
   const r = rng(seed); let s = '';
@@ -906,7 +942,7 @@ const LEAF_SVG = c => `<svg viewBox="0 0 40 40"><path d="M6 34C6 18 18 6 34 6c0 
 function buildDecor() {
   // Welt hinter dem Fenster
   const w = $('#world');
-  w.innerHTML = treesSVG(1920, 1080, 2, 14, '#123a4c', 1000, .55, .85, 20, 44) + treesSVG(1920, 1080, 3, 9, '#0a2232', 1080, .7, 1, 40, 90) + '<div class="fog"></div>' + treesSVG(1920, 1080, 5, 6, '#071823', 1080, .8, 1, 70, 140);
+  w.innerHTML = treesSVG(1920, 1080, 2, 14, '#123a4c', 1000, .55, .85, 20, 44, 'xMidYMax slice') + treesSVG(1920, 1080, 3, 9, '#0a2232', 1080, .7, 1, 40, 90, 'xMidYMax slice') + '<div class="fog"></div>' + treesSVG(1920, 1080, 5, 6, '#071823', 1080, .8, 1, 70, 140, 'xMidYMax slice');
   for (let i = 0; i < 30; i++) { const b = document.createElement('div'); b.className = 'bokeh'; const s = 4 + Math.random() * 10, c = Math.random() > .5 ? '#f6d77a' : '#7ce0c0';
     Object.assign(b.style, { left: Math.random() * 100 + '%', top: Math.random() * 100 + '%', width: s + 'px', height: s + 'px', background: c, boxShadow: `0 0 ${s * 2}px ${c}`, animationDelay: Math.random() * 8 + 's', animationDuration: 6 + Math.random() * 6 + 's' }); w.appendChild(b); }
   // Detail-Szene
@@ -934,12 +970,21 @@ function buildDecor() {
 /* =====================================================================
    Roboter
    ===================================================================== */
-const ASSET = {};
-const rigs = {}, views = [];
 let pipView = null, bigView = null, portraitViews = [];
-const PIP = { css: [230, 267], pad: 46 };
-function pipViewRect() { const d = RIGDEF.pip, p = PIP.pad, sx = (d.W + 2 * p), sy = sx * PIP.css[1] / PIP.css[0]; return [-p / d.W, (-(sy - d.H) / 2) / d.H, sx / d.W, sy / d.H]; }
-function pipEyeCss() { const v = pipViewRect(), d = RIGDEF.pip; return [((524 / d.W) - v[0]) / v[2] * PIP.css[0], ((270 / d.H) - v[1]) / v[3] * PIP.css[1]]; }
+const PIP = { css: [230, 267], pad: 46, head: [448, 238, 252], cr: 89 };   // Kopf-Ausschnitt: Mitte x/y, Radius (Originalpixel)
+function pipViewFull() { const d = RIGDEF.pip, p = PIP.pad, sx = (d.W + 2 * p), sy = sx * PIP.css[1] / PIP.css[0]; return [-p / d.W, (-(sy - d.H) / 2) / d.H, sx / d.W, sy / d.H]; }
+function pipViewHead() { const d = RIGDEF.pip, [cx, cy, r] = PIP.head, s = PIP.cr / r, w = PIP.css[0] / s, h = PIP.css[1] / s;
+  return [(cx - PIP.css[0] / 2 / s) / d.W, (cy - PIP.css[1] / 2 / s) / d.H, w / d.W, h / d.H]; }
+function pipEyeCss(v) { const d = RIGDEF.pip; return [((524 / d.W) - v[0]) / v[2] * PIP.css[0], ((267 / d.H) - v[1]) / v[3] * PIP.css[1]]; }
+const pipZoom = { z: 1, from: 1, to: 1, t0: 0, dur: 1 };
+function zoomPip(to, dur) { Object.assign(pipZoom, { from: pipZoom.z, to, t0: performance.now(), dur }); }
+function pipFallbackFrame(head) {   // nur ohne WebGL: Standbild auf Kopf oder ganzen Körper ausrichten
+  const im = $('#pipGfx img'); if (!im) return;
+  const s = head ? PIP.cr / PIP.head[2] : PIP.css[0] / (870 + 2 * PIP.pad);
+  const x = head ? PIP.css[0] / 2 - PIP.head[0] * s : PIP.pad * s, y = head ? PIP.css[1] / 2 - PIP.head[1] * s : (PIP.css[1] - 1018 * s) / 2;
+  im.style.cssText = `width:${870 * s}px;height:${1018 * s}px;left:${x}px;top:${y}px;max-width:none;transition:all .9s cubic-bezier(.55,0,.2,1)`;
+}
+function setEyeFlashPos(v) { const [ex, ey] = pipEyeCss(v); $('#pip').style.setProperty('--ex', ex + 'px'); $('#pip').style.setProperty('--ey', ey + 'px'); }
 
 function makeView(host, css, key, rigKey, viewRect, fallbackImg) {
   const cv = document.createElement('canvas'); host.appendChild(cv);
@@ -1089,14 +1134,16 @@ function bump(s) { const f = $(s); f.classList.remove('bump'); void f.offsetWidt
    Öffnen / Schließen über Pip
    ===================================================================== */
 let open = false, talk = -1e9, pipHover = false;
-const PIP_OPEN = [30, 14], PIP_CLOSED = [1640, 770];
+const PIP_OPEN = [30, -7.5], PIP_CLOSED = [1640, 770];   // offen: Kopfkreis sitzt mittig im Medaillon
 function placePip(o) { const p = $('#pip'), [x, y] = o ? PIP_OPEN : PIP_CLOSED; p.style.setProperty('--px', x + 'px'); p.style.setProperty('--py', y + 'px'); p.style.setProperty('--ps', o ? 1 : 1.15); }
 function eyeFlash() { const f = $('#eyeflash'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); }
 function openInv() {
-  if (open) return; open = true; $('#summonLabel').classList.remove('show'); placePip(true);
+  if (open) return; open = true; $('#summonLabel').classList.remove('show');
+  const pip = $('#pip'); pip.classList.add('avatar'); pip.classList.remove('free'); zoomPip(1, 900); pipFallbackFrame(true); placePip(true);
+  setEyeFlashPos(pipViewHead());
   setTimeout(() => {
     eyeFlash();
-    const win = $('#win'), [ex, ey] = pipEyeCss();
+    const win = $('#win'), [ex, ey] = pipEyeCss(pipViewHead());
     win.style.setProperty('--ox', (PIP_OPEN[0] + ex - 54) + 'px'); win.style.setProperty('--oy', (PIP_OPEN[1] + ey - 40) + 'px');
     win.className = 'opening'; renderGrid(); select(sel, true); setTab(tab);
     setTimeout(() => say('Hallo! Hier ist dein Team.'), 1000);
@@ -1105,7 +1152,8 @@ function openInv() {
 }
 function closeInv() {
   if (!open) return; open = false; const win = $('#win'); eyeFlash(); win.className = 'closing';
-  setTimeout(() => { win.className = 'closed'; placePip(false); setTimeout(() => $('#summonLabel').classList.add('show'), 700); }, 520);
+  setTimeout(() => { win.className = 'closed'; const pip = $('#pip'); pip.classList.remove('avatar'); pip.classList.add('free'); zoomPip(0, 900); pipFallbackFrame(false); setEyeFlashPos(pipViewFull()); placePip(false);
+    setTimeout(() => $('#summonLabel').classList.add('show'), 700); }, 520);
 }
 
 /* =====================================================================
@@ -1148,7 +1196,13 @@ function frame(now) {
     const talking = now - talk < 2200;
     pr.ch.blink = pr.blinkAt(now); pr.ch.squint = pipHover ? 0.35 : 0;
     pr.ch.fin = pipHover || talking ? 2.2 : 0.6; pr.update(t);
-    if (pipView) { pipView.p.glow = 0.75 + 0.35 * Math.sin(t * 2.2) + (talking ? 0.5 + 0.4 * Math.sin(t * 18) : 0); pipView.draw(now); }
+    if (pipView) {
+      const k = clamp((now - pipZoom.t0) / pipZoom.dur, 0, 1), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+      pipZoom.z = pipZoom.from + (pipZoom.to - pipZoom.from) * e;
+      const a = pipViewFull(), b = pipViewHead(); pipView.view = a.map((v, i) => v + (b[i] - v) * pipZoom.z);
+      pipView.p.offY = pipZoom.z * (Math.sin(t * 1.7) * 0.008 + (talking ? Math.sin(t * 14) * 0.003 : 0));
+      pipView.p.glow = 0.75 + 0.35 * Math.sin(t * 2.2) + (talking ? 0.5 + 0.4 * Math.sin(t * 18) : 0); pipView.draw(now);
+    }
   }
   // Wesen
   if (open) team.forEach(c => { if (!c) return; const r = rigs[c.rig]; if (!r || r._t === now) return; r._t = now;
@@ -1175,12 +1229,13 @@ function loadAssets() {
 loadAssets().then(() => {
   Object.keys(RIGDEF).forEach(k => rigs[k] = new Rig(RIGDEF[k]));
   buildDecor(); buildNav(); buildItems(); bindUI();
-  const [ex, ey] = pipEyeCss(); $('#pip').style.setProperty('--ex', ex + 'px'); $('#pip').style.setProperty('--ey', ey + 'px');
-  pipView = makeView($('#pipGfx'), PIP.css, 'pip', 'pip', pipViewRect(), 'robot');
+  const pipEl = $('#pip'); pipEl.classList.add('notrans', 'avatar'); setEyeFlashPos(pipViewHead());
+  pipView = makeView($('#pipGfx'), PIP.css, 'pip', 'pip', pipViewHead(), 'robot'); pipFallbackFrame(true);
+  requestAnimationFrame(() => requestAnimationFrame(() => pipEl.classList.remove('notrans')));
   const rd = RIGDEF[team[0].rig];
   bigView = makeView($('#creature'), [600, 632], team[0].rig, team[0].rig, stageRect(rd), rd.img);
   if (bigView) bigView.p.tint = 1;
-  fit(); addEventListener('resize', fit);
+  fit();
   placePip(true);
   requestAnimationFrame(frame);
   openInv();
