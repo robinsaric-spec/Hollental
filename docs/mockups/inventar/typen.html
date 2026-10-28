@@ -174,6 +174,13 @@ const TYPES = [
 ];
 TYPES.forEach((t, i) => t.i = i);
 const TYPE = Object.fromEntries(TYPES.map(t => [t.id, t]));
+// Symbole der Seitenleiste (Textur-Index 14 bis 20)
+const NAVICONS = [
+  { id: 'nav-uebersicht', col: '#56d6f0' }, { id: 'nav-wesen', col: '#56d6f0' }, { id: 'nav-dex', col: '#4fc3f7' },
+  { id: 'nav-lager', col: '#4fc3f7' }, { id: 'nav-beutel', col: '#e0a85a' }, { id: 'nav-karte', col: '#4fd8e0' }, { id: 'nav-einstellungen', col: '#e0a85a' },
+];
+NAVICONS.forEach((t, k) => t.i = TYPES.length + k);
+const ICON = Object.assign({}, TYPE, Object.fromEntries(NAVICONS.map(t => [t.id, t])));
 
 const TFX_VS = `attribute vec2 aP;varying vec2 vUv;
 void main(){vUv=vec2(aP.x*0.5+0.5,0.5-aP.y*0.5);gl_Position=vec4(aP,0.0,1.0);}`;
@@ -276,6 +283,17 @@ void main(){
   off+=vec2(vn(uv*4.5+vec2(T*0.5,0.0))-0.5,vn(uv*4.5+vec2(4.0,-T*0.45))-0.5)*0.022*wG;
   off.y+=0.009*sin(T*1.7+uv.x*18.0)*(1.0-wG);}
  else if(ty==13){off.y+=0.007*sin(T*1.3+uv.x*10.0)*smoothstep(0.3,0.36,d);}
+ // ---- Seitenleiste: 14 Übersicht, 15 Wesen, 16 Dex, 17 Wesenlager, 18 Beutel, 19 Karte, 20 Einstellungen
+ else if(ty==14){off.y+=0.006*sin(T*1.2)*(1.0-smoothstep(0.24,0.3,length(uv-vec2(0.5,0.44))));}
+ else if(ty==15){float w=smoothstep(0.14,0.2,uv.x)*(1.0-smoothstep(0.8,0.86,uv.x))*smoothstep(0.26,0.32,uv.y)*(1.0-smoothstep(0.74,0.77,uv.y));
+  off.y+=(0.735-uv.y)*0.014*sin(T*1.6)*w;}
+ else if(ty==16){off.y+=0.005*sin(T*1.1)*smoothstep(0.1,0.16,uv.x)*(1.0-smoothstep(0.84,0.9,uv.x));}
+ else if(ty==19){for(int k=0;k<4;k++){vec2 pp=k==0?vec2(0.64,0.215):k==1?vec2(0.875,0.355):k==2?vec2(0.29,0.455):vec2(0.45,0.595);
+   off.y+=0.012*sin(T*2.0+float(k)*1.7)*ell(uv,pp+vec2(0.0,0.01),vec2(0.032,0.05),0.6);}}
+ else if(ty==20){vec2 cB=vec2(0.5,0.48),cS=vec2(0.715,0.685);float dB=length(uv-cB),dS=length(uv-cS);
+  float wS=smoothstep(0.03,0.04,dS)*(1.0-smoothstep(0.118,0.128,dS));
+  float wB=smoothstep(0.1,0.115,dB)*(1.0-smoothstep(0.255,0.267,dB))*smoothstep(0.122,0.13,dS);
+  off+=(rot(uv,cB,-T*0.22)-uv)*wB+(rot(uv,cS,T*0.46)-uv)*wS;}
  vec3 c=texture2D(uTex,uv+off*em).rgb;
  vec3 add=vec3(0.0);float mul=1.0;
  // ---------------- Licht und Teilchen ----------------
@@ -358,6 +376,36 @@ void main(){
    add+=vec3(1.0,0.8,0.45)*dotS(uv,p,0.012*w+0.004)*w*(1.0-behind)*1.2;}
   float inS=smoothstep(rS,rS-0.02,length(uv-cS)),hot=smoothstep(0.05,0.25,c.r-c.b)*smoothstep(0.2,0.5,lum(c));
   add+=c*hot*inS*(0.25+0.6*exp(-pow((uv.x-cS.x-0.2*sin(T*0.6))/0.07,2.0)));}
+ else if(ty==14){float fy=0.006*sin(T*1.2);vec2 gc=vec2(0.5,0.44-fy);
+  for(int k=0;k<5;k++){vec2 pp=k==0?vec2(0.408,0.389):k==1?vec2(0.5615,0.3375):k==2?vec2(0.6128,0.481):k==3?vec2(0.469,0.522):vec2(0.51,0.43);
+   pp.y-=fy;add+=vec3(0.75,0.97,1.0)*exp(-dot(uv-pp,uv-pp)/0.0006)*twk(T*1.4-float(k)*1.25,10.0)*0.9;}
+  float th=T*0.9;vec2 op=gc+vec2(cos(th)*0.283,sin(th)*0.0615);
+  add+=vec3(0.8,0.97,1.0)*exp(-dot(uv-op,uv-op)/0.0009)*(sin(th)>0.0?1.0:0.35)*0.9;
+  float sb=fract(T*0.25)*0.5+0.2;add+=vec3(0.35,0.85,1.0)*exp(-pow((uv.y-sb)/0.012,2.0))*(1.0-smoothstep(0.19,0.21,length(uv-gc)))*0.5;}
+ else if(ty==15){vec2 q=(uv-vec2(0.5,0.735))/vec2(0.28,0.075);float e=length(q),a=atan(q.y,q.x);
+  add+=vec3(0.4,0.9,1.0)*exp(-pow((e-1.0)/0.08,2.0))*pow(0.5+0.5*cos(a-T*1.6),8.0)*0.9;
+  for(int i=0;i<7;i++){float fi=float(i),ph=fract(T*0.22+h1(fi+5.0));
+   add+=vec3(0.6,0.95,1.0)*dotS(uv,vec2(0.34+h1(fi+2.0)*0.32,0.72-ph*0.5),0.004)*sin(ph*PI)*0.8*detail;}}
+ else if(ty==16){float tab=smoothstep(0.15,0.2,uv.x)*(1.0-smoothstep(0.78,0.83,uv.x))*smoothstep(0.17,0.21,uv.y)*(1.0-smoothstep(0.83,0.87,uv.y));
+  float sb=fract(T*0.3)*0.8+0.12;
+  add+=vec3(0.35,0.8,1.0)*(exp(-pow((uv.y-sb)/0.01,2.0))*0.7+exp(-pow((uv.y-sb+0.05)/0.05,2.0))*0.12)*tab;
+  vec2 ey=uv-vec2(0.372,0.392);add+=vec3(1.0,0.15,0.1)*exp(-dot(ey,ey)/0.0004)*(0.5+0.5*sin(T*2.6))*0.9;
+  mul*=1.0-0.18*step(0.93,hash(vec2(floor(T*9.0),3.0)))*(1.0-tab);}
+ else if(ty==17){float sb=0.18+0.66*(0.5+0.5*sin(T*0.7)),cyl=smoothstep(0.05,0.1,uv.x)*(1.0-smoothstep(0.9,0.95,uv.x));
+  add+=(vec3(0.4,0.9,1.0)*exp(-pow((uv.y-sb)/0.008,2.0))*0.55+c*exp(-pow((uv.y-sb)/0.04,2.0))*0.35)*cyl;
+  vec2 q=(uv-vec2(0.5,0.085))/vec2(0.25,0.04);float a=atan(q.y,q.x);
+  add+=vec3(0.5,0.95,1.0)*exp(-pow((length(q)-1.0)/0.18,2.0))*pow(0.5+0.5*cos(a-T*2.0),10.0)*0.8;
+  for(int i=0;i<8;i++){float fi=float(i),ph=fract(T*0.18+h1(fi+11.0));
+   add+=vec3(0.55,0.92,1.0)*dotS(uv,vec2(0.12+h1(fi+4.0)*0.76,0.86-ph*0.7),0.004)*sin(ph*PI)*0.7*detail;}}
+ else if(ty==18){float fl=0.75+0.25*vn(vec2(T*6.0,2.0))+0.1*sin(T*13.0);
+  add+=vec3(1.0,0.62,0.22)*exp(-length((uv-vec2(0.365,0.775))*vec2(1.0,0.9))*16.0)*0.55*fl;
+  float s=dot(uv-vec2(0.38,0.38),vec2(0.6,0.8)),pos=mod(T*0.35,1.6)-0.6;
+  add+=c*exp(-pow((s-pos)/0.025,2.0))*ell(uv,vec2(0.385,0.385),vec2(0.06,0.13),0.3)*1.6;
+  add+=vec3(1.0,0.9,0.6)*(glint(uv,vec2(0.645,0.62),0.05)*twk(T*1.0,14.0)+glint(uv,vec2(0.73,0.3),0.04)*twk(T*1.0-2.2,14.0))*0.6*detail;}
+ else if(ty==19){for(int k=0;k<4;k++){vec2 pp=k==0?vec2(0.64,0.215):k==1?vec2(0.875,0.355):k==2?vec2(0.29,0.455):vec2(0.45,0.595);
+   float ph=T*2.0+float(k)*1.7;pp.y-=0.012*sin(ph);add+=vec3(0.7,0.97,1.0)*exp(-dot(uv-pp,uv-pp)/0.0007)*(0.35+0.35*sin(ph+1.5));}
+  add+=c*smoothstep(0.08,0.25,c.b-max(c.r,c.g*0.85))*pow(0.5+0.5*sin(uv.x*34.0+uv.y*22.0-T*2.6),6.0)*0.5;}
+ else if(ty==20){mul*=1.0-0.2*step(0.94,hash(vec2(floor(T*8.0),9.0)))*smoothstep(0.26,0.29,abs(uv.x-0.5));}
  c=c*mul+add;
  // ---------------- Rahmen: Glanz läuft um den Ring, Rauten pulsieren ----------------
  if(uMode<0.5){float rb=smoothstep(0.385,0.405,d)*(1.0-smoothstep(0.47,0.49,d));
@@ -422,17 +470,18 @@ const TypeFX = (() => {
      o.mode: 'full' = Medaillon mit Ring und Rauten, 'core' = nur das Motiv (für kleine Größen)
      o.ring: dünner Ring in Typfarbe um das Motiv (nur 'core'), o.hover: Element, das den Hover auslöst */
   function mount(host, id, o = {}) {
-    const t = TYPE[id]; if (!t) return null;
+    const t = ICON[id]; if (!t) return null;
     host.classList.add('ty'); host.style.setProperty('--tc', t.col); host.dataset.type = id;
     if (!avail) { host.innerHTML = `<img alt="" src="${srcs[t.i]}" style="width:100%;height:100%;border-radius:50%;${o.mode === 'core' ? 'transform:scale(1.25)' : ''}">`; return null; }
     const c = document.createElement('canvas'); c.style.cssText = 'display:block;width:100%;height:100%'; host.replaceChildren(c);
     const i = { cv: c, ctx: c.getContext('2d'), t, mode: o.mode === 'core' ? 1 : 0, ring: o.ring ? 1 : 0, unblend: o.unblend === false ? 0 : 1,
-      h: 0, hv: 0, fl: 0, T: Math.random() * 40, vis: false, drawn: -1 };
+      h: 0, hv: 0, fl: 0, act: 0, T: Math.random() * 40, vis: false, drawn: -1 };
     const hv = o.hover === undefined ? host : o.hover;
     if (hv) { hv.addEventListener('pointerenter', () => { i.h = 1; i.fl = 1; }); hv.addEventListener('pointerleave', () => { i.h = 0; }); }
     inst.push(i); io.observe(c); return i;
   }
   function flare(host) { inst.forEach(i => { if (host.contains(i.cv)) i.fl = 1; }); }
+  function setActive(host, on) { inst.forEach(i => { if (host.contains(i.cv)) { if (on && !i.act) i.fl = 1; i.act = on ? 1 : 0; } }); }   // aktiver Eintrag: etwas heller und lebhafter
   function draw(i, w, h) {
     if (cv.width < w || cv.height < h) { cv.width = Math.max(cv.width, w); cv.height = Math.max(cv.height, h); }
     gl.viewport(0, 0, w, h);
@@ -450,7 +499,7 @@ const TypeFX = (() => {
     if (inst.some(i => !i.cv.isConnected)) inst = inst.filter(i => { if (i.cv.isConnected) return true; io.unobserve(i.cv); return false; });
     const s = scaleFn() * Math.min(window.devicePixelRatio || 1, 2);
     for (const i of inst) {
-      i.hv += (i.h - i.hv) * Math.min(1, dt * 8);
+      i.hv += (Math.max(i.h, i.act * 0.45) - i.hv) * Math.min(1, dt * 8);
       i.fl = Math.max(0, i.fl - dt * 1.5);
       if (!still && !frozen) i.T += dt * (1 + 0.9 * i.hv);
       if (!i.vis || !tex[i.t.i]) continue;
@@ -462,7 +511,7 @@ const TypeFX = (() => {
   }
   // nur für Tests: Zeit anhalten und setzen
   const debug = { freeze(v) { frozen = v; }, setT(t) { inst.forEach(i => i.T = t); }, get inst() { return inst; }, lost: () => !!gl && gl.isContextLost() };
-  return { init, mount, flare, tick, debug, get ok() { return avail; } };
+  return { init, mount, flare, setActive, tick, debug, get ok() { return avail; } };
 })();
 
 </script>
