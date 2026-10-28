@@ -245,6 +245,13 @@ canvas{display:block}
 .leaf svg{width:100%;height:100%;animation:leafSpin calc(var(--d)/3) ease-in-out infinite alternate}
 @keyframes leafFall{0%{opacity:0;transform:translate(0,0)}8%{opacity:var(--o)}50%{transform:translate(var(--dx),330px)}92%{opacity:var(--o)}100%{opacity:0;transform:translate(calc(var(--dx)*-.4),700px)}}
 @keyframes leafSpin{from{transform:rotate(-40deg) scaleX(1)}to{transform:rotate(60deg) scaleX(.55)}}
+.pt{position:absolute;left:0;top:0;border-radius:50%;background:var(--c);box-shadow:0 0 8px 2px var(--c);pointer-events:none;z-index:30}
+.shock{position:absolute;left:642px;top:511px;width:640px;height:118px;border-radius:50%;border:4px solid color-mix(in srgb,var(--c) 45%,#fff);box-shadow:0 0 22px 4px var(--c),inset 0 0 26px 2px var(--c);background:radial-gradient(closest-side,transparent 55%,color-mix(in srgb,var(--c) 35%,transparent) 85%,transparent);pointer-events:none}
+.burst{position:absolute;left:642px;top:330px;width:640px;height:640px;border-radius:50%;pointer-events:none;mix-blend-mode:screen;background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--aura) 60%,#fff) 0deg 2.5deg,transparent 2.5deg 15deg);-webkit-mask:radial-gradient(closest-side,#000 0 10%,rgba(0,0,0,.55) 32%,transparent 100%);mask:radial-gradient(closest-side,#000 0 10%,rgba(0,0,0,.55) 32%,transparent 100%)}
+.ped .chg,.ped .fast{opacity:0;transition:opacity .35s}
+.ped .fast{transform-origin:0 0;animation:spin 2.4s linear infinite}
+.ped.charge .chg{opacity:1}.ped.charge .fast{opacity:.95}
+.ped.charge .rune{opacity:1!important;filter:drop-shadow(0 0 6px #8ff0ff)}
 .pop{position:absolute;font-size:30px;font-weight:700;color:#fff;text-shadow:0 0 12px var(--pc,#3fdc8a),0 2px 0 #0008;animation:pop 1.3s var(--ease-out) forwards;pointer-events:none;white-space:nowrap;z-index:30}
 @keyframes pop{0%{opacity:0;transform:translateY(10px) scale(.6)}20%{opacity:1;transform:translateY(-10px) scale(1.15)}100%{opacity:0;transform:translateY(-110px) scale(1)}}
 .spark{position:absolute;width:22px;height:22px;pointer-events:none;animation:spark .9s ease-out forwards;z-index:30}
@@ -430,6 +437,7 @@ kbd{font-family:inherit;font-size:16px;min-width:30px;text-align:center;padding:
             <div class="beam" id="beam"></div>
             <div class="ped" id="ped"></div>
             <div class="cshadow"></div>
+            <div class="fx" id="fxFloor"></div>
             <div class="creature" id="creature" role="button" tabindex="-1" aria-label="Wesen streicheln"></div>
             <div class="fx" id="fxFront"></div>
           </div>
@@ -505,6 +513,7 @@ const $$ = s => [...document.querySelectorAll(s)];
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const smooth = (e0, e1, x) => { const t = clamp((x - e0) / (e1 - e0), 0, 1); return t * t * (3 - 2 * t); };
 const easeOut = t => 1 - Math.pow(1 - t, 3);
+const easeOutBack = t => 1 + 2.9 * Math.pow(t - 1, 3) + 1.9 * Math.pow(t - 1, 2);
 function rng(seed){ return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 const NS = 'http://www.w3.org/2000/svg';
 const ASSET = {}, rigs = {}, views = [];
@@ -654,18 +663,32 @@ class Rig {
 /* ---------- WebGL-Ansicht (ein Canvas zeichnet ein Rig) ---------- */
 const VS = `attribute vec2 aPos;attribute vec2 aUv;uniform vec4 uView;uniform vec4 uXf;uniform vec2 uOff;varying vec2 vUv;
 void main(){vec2 p=uXf.xy+(aPos-uXf.xy)*uXf.zw+uOff;vec2 c=(p-uView.xy)/uView.zw;gl_Position=vec4(c.x*2.0-1.0,1.0-c.y*2.0,0.0,1.0);vUv=aUv;}`;
-const FS = `precision mediump float;varying vec2 vUv;uniform sampler2D uTex;uniform sampler2D uGlow;
-uniform float uTime,uGlowAmt,uReveal,uFlash,uTintAmt,uEyeAmt;uniform vec3 uGlowCol,uTint;uniform vec4 uEye;
-float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+const FS = `#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+varying vec2 vUv;uniform sampler2D uTex;uniform sampler2D uGlow;
+uniform float uTime,uGlowAmt,uFlash,uTintAmt,uEyeAmt,uDis,uSil,uShine;uniform vec3 uGlowCol,uTint,uSilCol;uniform vec4 uEye;uniform vec2 uCenter;
+float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
+float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
+ return mix(mix(hash(i),hash(i+vec2(1.0,0.0)),f.x),mix(hash(i+vec2(0.0,1.0)),hash(i+vec2(1.0,1.0)),f.x),f.y);}
+float fbm(vec2 p){return 0.65*noise(p)+0.35*noise(p*2.3+7.3);}
 void main(){vec4 c=texture2D(uTex,vUv);float g=texture2D(uGlow,vUv).r;
 if(uEyeAmt>0.0){float ed=length((vUv-uEye.xy)/uEye.zw);g*=1.0-uEyeAmt*smoothstep(1.0,0.6,ed);}
 float flow=0.55+0.45*sin(uTime*2.3-(vUv.x*7.0+vUv.y*11.0));
 vec3 col=c.rgb*(1.0-0.06*uTintAmt)+uTint*c.a*smoothstep(0.5,1.0,vUv.y)*0.16*uTintAmt;
 col+=uGlowCol*g*uGlowAmt*flow;col+=vec3(0.55,0.88,1.0)*uFlash*c.a;float a=c.a;
-if(uReveal<0.999){float n=hash(floor(vUv*vec2(160.0,260.0)))*0.04;float d=(1.0-vUv.y)-(uReveal*1.25-0.1)+n;
- if(d>0.0){col=vec3(0.0);a=0.0;}
- float e=smoothstep(0.04,0.0,abs(d))*max(c.a,g);col+=vec3(0.45,0.92,1.0)*e*1.6;
- col*=1.0-0.22*step(0.5,fract(vUv.y*180.0))*(1.0-uReveal);}
+// Silhouette: Gestalt leuchtet in der Aura-Farbe, bevor die Farbe einfließt
+if(uSil>0.0){float lum=dot(c.rgb/max(c.a,0.001),vec3(0.299,0.587,0.114));float en=fbm(vUv*16.0+vec2(uTime*0.6,-uTime*0.9));
+ vec3 sc=(uSilCol*0.85+vec3(0.2))*(0.5+0.75*lum)+vec3(0.55,0.85,1.0)*en*0.4;col=mix(col,sc*c.a,uSil);}
+// Lichtschimmer, der diagonal über das Wesen gleitet
+if(uShine>0.0&&uShine<1.0){float sp=vUv.x*0.8+vUv.y*0.55;float band=smoothstep(0.06,0.0,abs(sp-(uShine*1.75-0.2)));col+=vec3(1.0,0.98,0.92)*band*0.6*c.a;}
+// Zerfall: organisches Rauschen, von außen nach innen, mit glühenden Rändern
+if(uDis>0.0){float o=0.6*(1.0-clamp(distance(vUv,uCenter)/0.5,0.0,1.0))+0.4*fbm(vUv*11.0+vec2(0.0,uTime*0.4));
+ float d=o-(uDis*1.14-0.07);
+ if(d<0.0){float em=smoothstep(-0.06,0.0,d);col=uSilCol*c.a*em*1.7;a=0.0;}
+ else{float e=1.0-smoothstep(0.0,0.05,d);col+=uSilCol*c.a*e*1.9;}}
 gl_FragColor=vec4(col,a);}`;
 
 function potCanvas(img) {
@@ -682,11 +705,12 @@ class GLView {
     const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
     if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr));
     this.pr = pr; gl.useProgram(pr);
-    this.u = {}; ['uView', 'uXf', 'uOff', 'uTime', 'uGlowAmt', 'uReveal', 'uFlash', 'uTintAmt', 'uGlowCol', 'uTint', 'uTex', 'uGlow', 'uEye', 'uEyeAmt'].forEach(n => this.u[n] = gl.getUniformLocation(pr, n));
+    this.u = {}; ['uView', 'uXf', 'uOff', 'uTime', 'uGlowAmt', 'uFlash', 'uTintAmt', 'uGlowCol', 'uTint', 'uTex', 'uGlow', 'uEye', 'uEyeAmt', 'uDis', 'uSil', 'uShine', 'uSilCol', 'uCenter'].forEach(n => this.u[n] = gl.getUniformLocation(pr, n));
     this.aPos = gl.getAttribLocation(pr, 'aPos'); this.aUv = gl.getAttribLocation(pr, 'aUv');
     gl.uniform1i(this.u.uTex, 0); gl.uniform1i(this.u.uGlow, 1);
     gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    this.p = { reveal: 1, flash: 0, glow: 1, offX: 0, offY: 0, sx: 1, sy: 1, tint: 0 };
+    this.p = { dis: 0, sil: 0, shine: 0, flash: 0, glow: 1, offX: 0, offY: 0, sx: 1, sy: 1, tint: 0 };
+    this.silCol = [0.6, 0.9, 1.0];
     this.tw = [];
   }
   tex(img) {
@@ -731,7 +755,9 @@ class GLView {
     gl.uniform4f(this.u.uXf, d.anchor[0] / d.W, d.anchor[1] / d.H, p.sx, p.sy);
     gl.uniform2f(this.u.uOff, p.offX, p.offY);
     gl.uniform1f(this.u.uTime, now / 1000); gl.uniform1f(this.u.uGlowAmt, d.glowAmt * p.glow);
-    gl.uniform1f(this.u.uReveal, p.reveal); gl.uniform1f(this.u.uFlash, p.flash); gl.uniform1f(this.u.uTintAmt, p.tint);
+    gl.uniform1f(this.u.uDis, p.dis); gl.uniform1f(this.u.uSil, p.sil); gl.uniform1f(this.u.uShine, p.shine); gl.uniform3fv(this.u.uSilCol, this.silCol);
+    const cc = d.center || [d.W / 2, d.H / 2]; gl.uniform2f(this.u.uCenter, cc[0] / d.W, cc[1] / d.H);
+    gl.uniform1f(this.u.uFlash, p.flash); gl.uniform1f(this.u.uTintAmt, p.tint);
     gl.uniform3fv(this.u.uGlowCol, d.glowCol); gl.uniform3fv(this.u.uTint, d.tintCol || [0.3, 0.8, 0.9]);
     const eg = d.eyeGlow || [0, 0, 1]; gl.uniform4f(this.u.uEye, eg[0] / d.W, eg[1] / d.H, eg[2] / d.W, eg[2] / d.H); gl.uniform1f(this.u.uEyeAmt, d.eyeGlow ? r.rig.ch.blink : 0);
     gl.drawElements(gl.TRIANGLES, r.rig.idx.length, gl.UNSIGNED_SHORT, 0);
@@ -756,7 +782,7 @@ const RIGDEF = {
       { type: 'move', mask: MK.poly([[359, 848], [550, 848], [550, 995], [359, 995]], 5), dy: 14, per: 3.4, ph: 1.6 },
       { type: 'move', mask: MK.poly([[558, 756], [670, 756], [670, 938], [558, 938]], 5), dy: 14, per: 3.4, ph: 2.3 },
     ] },
-  molch: { W: 1254, H: 1254, img: 'molch', glow: 'glow_molch', glowCol: [0.55, 0.92, 1.0], glowAmt: 1.0, tintCol: [0.27, 0.79, 0.9], anchor: [640, 1100],
+  molch: { W: 1254, H: 1254, img: 'molch', glow: 'glow_molch', glowCol: [0.55, 0.92, 1.0], glowAmt: 1.0, tintCol: [0.27, 0.79, 0.9], anchor: [640, 1100], center: [690, 690],
     stage: { s: 0.37 }, portrait: { cx: 935, cy: 400, size: 560 },
     grid: { n: 100, rx: [[868, 986, 4], [1088, 1148, 3]], ry: [[392, 494, 4], [362, 452, 3]] },
     deform: [
@@ -768,7 +794,7 @@ const RIGDEF = {
       { type: 'scale', c: [870, 770], mask: MK.ell(860, 760, 300, 200, 90), sx: 0.010, sy: 0.018, per: 3.6, mul: 'breath' },
       { type: 'move', mask: MK.rampY(1010, 860), dy: -5, per: 3.6, mul: 'breath' },
     ] },
-  hueter: { W: 1254, H: 1254, img: 'hueter', glow: 'glow_hueter', glowCol: [0.32, 0.78, 1.0], glowAmt: 1.15, tintCol: [0.25, 0.7, 1.0], anchor: [640, 1195],
+  hueter: { W: 1254, H: 1254, img: 'hueter', glow: 'glow_hueter', glowCol: [0.32, 0.78, 1.0], glowAmt: 1.15, tintCol: [0.25, 0.7, 1.0], anchor: [640, 1195], center: [720, 640],
     stage: { s: 0.38 }, portrait: { cx: 850, cy: 245, size: 470 },
     grid: { n: 100, rx: [[896, 946, 2.5]], ry: [[244, 280, 2]] },
     deform: [
@@ -913,6 +939,7 @@ function pedestalSVG() {
   for (let i = 0; i < 7; i++) pebbles += `<ellipse cx="${(60 + r() * 460).toFixed(0)}" cy="${(160 + r() * 18).toFixed(0)}" rx="${(5 + r() * 8).toFixed(0)}" ry="${(3 + r() * 4).toFixed(0)}" fill="#2a3a46"/>`;
   for (let i = 0; i < 72; i++) { const a = i * 5 * Math.PI / 180, l = i % 6 === 0 ? 14 : 6; floorT += `<line x1="${Math.cos(a) * 214}" y1="${Math.sin(a) * 214}" x2="${Math.cos(a) * (214 - l)}" y2="${Math.sin(a) * (214 - l)}"/>`; }
   for (let i = 0; i < 16; i++) { const a = i * 22.5; floorG += `<g transform="rotate(${a}) translate(-5 -178)"><path d="${runePath(r)}" fill="none" stroke-width="2"/></g>`; }
+  let fastG = ''; for (let i = 0; i < 12; i++) fastG += `<g transform="rotate(${i * 30}) translate(-5 -112)"><path d="${runePath(r)}" fill="none" stroke-width="2.6"/></g>`;
   return `<svg viewBox="0 0 580 196">
    <defs>
     <linearGradient id="stoneSide" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a4d5c"/><stop offset=".5" stop-color="#253541"/><stop offset="1" stop-color="#131d26"/></linearGradient>
@@ -931,6 +958,8 @@ function pedestalSVG() {
    <ellipse cx="290" cy="74" rx="236" ry="44" fill="url(#water)"/>
    <g class="rim"><ellipse cx="290" cy="74" rx="244" ry="47" fill="none" stroke-width="3" opacity=".9" style="stroke:var(--aura);filter:drop-shadow(0 0 8px var(--aura))"/></g>
    <g transform="translate(290 74) scale(1 .2)"><g class="floor" stroke="#a6ecff" opacity=".7">${floorT}<circle r="214" fill="none" stroke-width="2"/><circle r="150" fill="none" stroke-width="1.5" stroke-dasharray="30 12 4 12"/></g><g class="floor2" stroke="#d6f8ff" opacity=".75">${floorG}</g></g>
+   <g class="chg"><ellipse cx="290" cy="74" rx="236" ry="44" fill="url(#water)"/><ellipse cx="290" cy="74" rx="244" ry="47" fill="none" stroke-width="6" style="stroke:var(--aura);filter:blur(4px)"/></g>
+   <g transform="translate(290 74) scale(1 .2)"><g class="fast" stroke="#e6fbff" style="filter:drop-shadow(0 0 6px var(--aura))">${fastG}<circle r="128" fill="none" stroke-width="2" stroke-dasharray="18 10"/></g></g>
    <ellipse class="ripple" cx="290" cy="74" rx="220" ry="40" fill="none" stroke="#c6f6ff" stroke-width="1.6"/>
    <ellipse class="ripple" style="animation-delay:1.4s" cx="290" cy="74" rx="220" ry="40" fill="none" stroke="#c6f6ff" stroke-width="1.6"/>
    <ellipse class="ripple" style="animation-delay:2.8s" cx="290" cy="74" rx="220" ry="40" fill="none" stroke="#c6f6ff" stroke-width="1.6"/>
@@ -1051,21 +1080,92 @@ function updateDetailText(t) {
   ['#dName', '#dChips', '.lvrow', '#dDesc', '#dEvo'].forEach((s, k) => $(s).animate([{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], { duration: 480, delay: k * 60, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'both' }));
 }
 
+/* Wechsel: altes Wesen in den Runenkreis zurückrufen, neues daraus beschwören */
+let swapTok = 0;
+const D = ms => ms * (window.__TS || 1);   // Zeitfaktor (nur für Tests: window.__TS = 8 -> Zeitlupe)
+const RM = matchMedia('(prefers-reduced-motion: reduce)');
+const PED_C = [642, 511];                       // Mitte der Sockeloberfläche (Panel-Koordinaten)
+const hexRgb = h => { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
 function select(i, first) {
   const t = team[i]; if (!t || (i === sel && !first)) return;
-  sel = i; $$('#grid .card').forEach((c, k) => team[k] && c.setAttribute('aria-selected', k === i));
-  setAura(t.aura);
-  $('#beam').classList.remove('flash'); void $('#beam').offsetWidth; $('#beam').classList.add('flash');
-  const halo = $('#halo'); halo.classList.remove('flare'); void halo.offsetWidth; halo.classList.add('flare');
-  const swap = () => {
-    if (bigView) { const rd = RIGDEF[t.rig]; bigView.use(t.rig, rigs[t.rig], stageRect(rd)); bigView.p.reveal = 0; bigView.tween('reveal', 1, 1100, null, t => t); }
-    else { const im = $('#creature img'); if (im) im.src = IMG[RIGDEF[t.rig].img]; }
-  };
-  if (bigView && !first) bigView.tween('reveal', 0, 380, swap, t => t); else swap();
+  const prev = team[sel]; sel = i;
+  $$('#grid .card').forEach((c, k) => team[k] && c.setAttribute('aria-selected', k === i));
   updateDetailText(t);
   $('#hpF').style.width = '0'; $('#enF').style.width = '0'; $('#dEpF').style.width = '0';
   setTimeout(updateStats, 200); updateFollow();
+  const tok = ++swapTok;
+  if (!bigView) { setAura(t.aura); const im = $('#creature img'); if (im) im.src = IMG[RIGDEF[t.rig].img]; return; }
+  if (first || !prev || prev === t) summonIn(t, tok); else recallOut(prev, tok, () => summonIn(t, tok));
 }
+function recallOut(c, tok, done) {
+  const v = bigView; v.silCol = hexRgb(c.aura);
+  if (RM.matches) { v.tween('dis', 1, D(200), () => tok === swapTok && done(), t => t); return; }
+  $('#ped').classList.add('charge');
+  v.tween('dis', 1, D(560), null, t => t * t); v.tween('sx', 0.93, D(560), null, t => t * t); v.tween('sy', 0.86, D(560), null, t => t * t);
+  motes(c, 'out', 40);
+  setTimeout(() => { if (tok === swapTok) done(); }, D(580));
+}
+function summonIn(c, tok) {
+  const v = bigView, rd = RIGDEF[c.rig];
+  setAura(c.aura); v.silCol = hexRgb(c.aura);
+  v.tw = []; v.use(c.rig, rigs[c.rig], stageRect(rd));
+  Object.assign(v.p, { dis: 1, sil: 1, shine: 0, flash: 0, sx: 0.8, sy: 0.8, offY: 0 });
+  if (RM.matches) { Object.assign(v.p, { sx: 1, sy: 1, sil: 0 }); v.tween('dis', 0, D(250), null, t => t); return; }
+  $('#ped').classList.add('charge');
+  motes(c, 'in', 44);
+  setTimeout(() => {
+    if (tok !== swapTok) return;
+    v.tween('dis', 0, D(380), null, easeOut);
+    v.tween('sx', 1, D(720), null, easeOutBack); v.tween('sy', 1, D(720), null, easeOutBack);
+    v.p.flash = 0.55; v.tween('flash', 0, D(600));
+    shockwave(c.aura); burst(); flashBeam(); flareHalo(); sparks(c.aura, 16);
+    setTimeout(() => {
+      if (tok !== swapTok) return;
+      v.tween('sil', 0, D(700), null, easeOut);
+      v.tween('shine', 1, D(900), () => { v.p.shine = 0; }, t => t);
+      const r = rigs[c.rig]; r.ch.tuft = 2.4; setTimeout(() => { r.ch.tuft = 1; }, D(1000));
+    }, D(280));
+    setTimeout(() => $('#ped').classList.remove('charge'), D(1100));
+  }, D(420));
+}
+function bodyPoints(rd) {   // Punkte auf dem Körper des Wesens (aus dem Alphakanal), in Panel-Koordinaten
+  const S = 96, cv = document.createElement('canvas'); cv.width = cv.height = S;
+  const x = cv.getContext('2d', { willReadFrequently: true }); x.drawImage(ASSET[rd.img], 0, 0, S, S);
+  const d = x.getImageData(0, 0, S, S).data, pts = [], s = rd.stage.s;
+  for (let j = 0; j < S; j++) for (let i = 0; i < S; i++) if (d[(j * S + i) * 4 + 3] > 150)
+    pts.push([282 + 360 + ((i + .5) / S * rd.W - rd.anchor[0]) * s, 522 + ((j + .5) / S * rd.H - rd.anchor[1]) * s]);
+  return pts;
+}
+function motes(c, dir, n) {   // dir 'out': vom Körper in den Kreis, 'in': aus dem Kreis zum Körper
+  const rd = RIGDEF[c.rig], pts = rd.pts || (rd.pts = bodyPoints(rd)), fx = $('#fxFront');
+  for (let k = 0; k < n; k++) {
+    const P = pts[Math.floor(Math.random() * pts.length)];
+    const F = [PED_C[0] + (Math.random() - .5) * 150, PED_C[1] + (Math.random() - .5) * 26];
+    const C = [(P[0] + F[0]) / 2 + (Math.random() - .5) * 240, Math.min(P[1], F[1]) - 30 - Math.random() * 90];
+    const path = [];
+    for (let q = 0; q <= 8; q++) { const t = q / 8, u = 1 - t; path.push([u * u * P[0] + 2 * u * t * C[0] + t * t * F[0], u * u * P[1] + 2 * u * t * C[1] + t * t * F[1]]); }
+    if (dir === 'in') path.reverse();
+    const el = document.createElement('i'), sz = 3 + Math.random() * 6, r = Math.random();
+    el.className = 'pt'; el.style.cssText = `width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin:${(-sz / 2).toFixed(1)}px 0 0 ${(-sz / 2).toFixed(1)}px;--c:${r < .18 ? '#ffffff' : r < .38 ? '#c4ec72' : c.aura}`;
+    fx.appendChild(el);
+    const kf = path.map(([x, y], q) => ({ transform: `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scale(${(dir === 'out' ? 1.2 - q / 8 * .9 : .3 + q / 8 * .9).toFixed(2)})`, opacity: q === 0 || q === 8 ? 0 : 1 }));
+    el.animate(kf, { duration: D(dir === 'out' ? 480 + Math.random() * 260 : 360 + Math.random() * 120), delay: D(dir === 'out' ? Math.random() * 200 : Math.random() * 90),
+      easing: dir === 'out' ? 'cubic-bezier(.5,0,.85,.5)' : 'cubic-bezier(.15,.6,.35,1)', fill: 'both' }).onfinish = () => el.remove();
+  }
+}
+function shockwave(col) {
+  const fx = $('#fxFloor');
+  [0, 150].forEach(dl => { const w = document.createElement('i'); w.className = 'shock'; w.style.setProperty('--c', col); fx.appendChild(w);
+    w.animate([{ transform: 'translate(-50%,-50%) scale(.12)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(.7)', opacity: .9, offset: .45 }, { transform: 'translate(-50%,-50%) scale(1.08)', opacity: 0 }],
+      { duration: D(760), delay: D(dl), easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'both' }).onfinish = () => w.remove(); });
+}
+function burst() {
+  const b = document.createElement('i'); b.className = 'burst'; $('#fxBack').appendChild(b);
+  b.animate([{ transform: 'translate(-50%,-50%) scale(.3) rotate(0deg)', opacity: 0 }, { opacity: .95, offset: .22 }, { transform: 'translate(-50%,-50%) scale(1.25) rotate(28deg)', opacity: 0 }],
+    { duration: D(950), easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'both' }).onfinish = () => b.remove();
+}
+function flashBeam() { const b = $('#beam'); b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
+function flareHalo() { const h = $('#halo'); h.classList.remove('flare'); void h.offsetWidth; h.classList.add('flare'); }
 function updateStats() {
   const t = team[sel];
   $('#hpF').style.width = (t.hp / t.hpMax * 100) + '%'; $('#enF').style.width = (t.en / t.enMax * 100) + '%'; $('#dEpF').style.width = (t.ep / t.epMax * 100) + '%';
