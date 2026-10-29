@@ -17,16 +17,16 @@ Eckklammern, Kupferwinkel an den Fenstern, gleiche Fenster-Projektion.
   - Wasserfälle: Nur das Wasser innerhalb des genauen Umrisses bewegt sich. Streifen laufen
     nach unten und werden schneller, Fels und Brücke daneben bleiben stehen. Am Fuß quillt Dunst.
   - Lavafälle fließen langsamer und glühen leise, darüber flimmert die Luft
-  - Wolken ziehen (oben schneller als am Horizont) und quellen dabei auf, rechts steigt Rauch.
-    Um das Wesen und am Horizont darunter wälzen sich die großen Wolkenballen kräftig und
-    kreisen langsam um es herum.
+  - Wolken ziehen ganz langsam mit dem Wind (höchstens etwa 1,5 px pro Sekunde) und behalten
+    dabei ihre Form: kein Wabern, kein Quellen. Alle ziehen in dieselbe Richtung, oben etwas
+    schneller als am Horizont, auch die großen Wolken um das Wesen.
   - Wie weit sich ein Pixel verschieben darf, hängt vom Abstand zum nächsten festen Element ab
-    (Horizont, Burgen, Held, Pip, Drachenkopf, Sichel), seitlich großzügiger als senkrecht.
-    So wird nichts Festes mitgezogen und nichts gestaucht. Runenbogen, Linien und Rauten liegen
-    als eigene Lichtebene über den Wolken: Die Wolken ziehen dahinter durch, das Licht bleibt stehen.
+    (Horizont, Burgen, Held, Pip, Drachenkopf, Sichel). So wird nichts Festes mitgezogen.
+    Runenbogen, Linien und Rauten liegen als eigene Lichtebene über den Wolken: Die Wolken ziehen
+    dahinter durch, das Licht bleibt stehen.
   - der See kräuselt sich, Pflanzen im Vordergrund wiegen sich im Wind
   - Pip schwebt und kippt leicht, Auge und Kern leuchten
-  - der Drache wabert leicht, sein Auge glimmt
+  - der Drache bewegt sich kaum merklich, sein Auge glimmt
   - leise Lichtimpulse auf dem Runenbogen und den senkrechten Linien
   - Nebel treibt durchs Tal, die Lichter der Städte flackern kaum merklich
   - etwas Glut über der Lavastadt, ab und zu Vögel
