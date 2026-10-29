@@ -611,9 +611,9 @@ const SH = {
     [[168,312],[185,304],[205,312],[206,328],[176,330]],
   ],
   pipParts: [[[172.5,309.5],[174.5,309.5],[184.5,313.5],[192.5,320.5],[197.5,322.5],[212.5,338.5],[214.5,342.5],[224.5,352.5],[227.5,357.5],[227.5,359.5],[228.5,360.5],[228.5,372.5],[227.5,373.5],[227.5,375.5],[228.5,376.5],[228.5,384.5],[230.5,386.5],[233.5,386.5],[234.5,387.5],[234.5,391.5],[231.5,396.5],[231.5,399.5],[235.5,404.5],[234.5,406.5],[232.5,407.5],[228.5,407.5],[223.5,409.5],[222.5,412.5],[217.5,418.5],[217.5,420.5],[219.5,422.5],[219.5,424.5],[214.5,428.5],[211.5,429.5],[208.5,432.5],[207.5,435.5],[203.5,438.5],[202.5,441.5],[200.5,443.5],[193.5,447.5],[192.5,447.5],[188.5,442.5],[183.5,442.5],[182.5,441.5],[179.5,441.5],[176.5,444.5],[172.5,445.5],[167.5,441.5],[166.5,439.5],[166.5,435.5],[154.5,425.5],[149.5,418.5],[147.5,413.5],[142.5,410.5],[143.5,399.5],[142.5,398.5],[142.5,393.5],[140.5,391.5],[139.5,391.5],[135.5,396.5],[132.5,397.5],[129.5,400.5],[107.5,411.5],[105.5,414.5],[103.5,415.5],[101.5,415.5],[100.5,414.5],[95.5,414.5],[94.5,413.5],[95.5,408.5],[99.5,404.5],[104.5,396.5],[112.5,388.5],[112.5,387.5],[121.5,379.5],[127.5,377.5],[134.5,369.5],[137.5,368.5],[141.5,365.5],[145.5,361.5],[146.5,356.5],[148.5,352.5],[161.5,338.5],[168.5,333.5],[174.5,330.5],[179.5,329.5],[182.5,325.5],[186.5,323.5],[186.5,320.5],[182.5,316.5],[174.5,312.5],[172.5,312.5],[171.5,310.5]],[[240.5,414.5],[242.5,414.5],[246.5,424.5],[246.5,427.5],[247.5,428.5],[247.5,431.5],[249.5,436.5],[249.5,444.5],[247.5,444.5],[244.5,441.5],[233.5,425.5],[233.5,420.5],[239.5,415.5]],[[138.5,438.5],[142.5,439.5],[149.5,446.5],[163.5,455.5],[165.5,455.5],[166.5,454.5],[173.5,454.5],[174.5,455.5],[174.5,458.5],[177.5,461.5],[179.5,461.5],[183.5,463.5],[193.5,465.5],[196.5,462.5],[198.5,458.5],[203.5,457.5],[207.5,455.5],[213.5,455.5],[215.5,457.5],[214.5,460.5],[206.5,463.5],[202.5,469.5],[200.5,470.5],[199.5,469.5],[198.5,470.5],[196.5,470.5],[192.5,473.5],[189.5,473.5],[188.5,474.5],[172.5,474.5],[156.5,466.5],[145.5,455.5],[139.5,446.5],[136.5,444.5],[134.5,444.5],[134.5,442.5],[136.5,439.5],[137.5,439.5]]],   // genauer Umriss von Pip (Körper mit Flosse, Flosse rechts, Ring)
-  sky: [[0,0],[1672,0],[1672,376],[1460,386],[1300,400],[1150,410],[1000,400],[880,394],[760,394],[600,388],[470,392],[300,382],[100,352],[0,336]],
+  sky: [[0,0],[1672,0],[1672,388],[1640,380],[1612,375],[1585,392],[1560,398],[1526,377],[1514,396],[1472,399],[1466,381],[1456,404],[1442,428],[1420,440],[1386,424],[1370,440],[1336,418],[1322,440],[1300,462],[1200,466],[1180,454],[1120,443],[1080,436],[1040,423],[1000,409],[980,399],[962,391],[945,398],[920,404],[880,408],[850,414],[820,418],[790,413],[770,413],[740,422],[700,424],[600,406],[470,392],[300,382],[100,352],[0,336]],
   castle: [[592,480],[598,418],[612,400],[619,396],[626,402],[640,380],[647,372],[654,380],[672,375],[680,336],[684,326],[688,336],[694,376],[708,400],[717,404],[726,412],[736,438],[752,450],[756,480]],
-  flyCastle: [[1272,335],[1268,200],[1290,140],[1320,80],[1352,40],[1400,28],[1442,48],[1462,120],[1458,335]],
+  flyCastle: [[1268,250],[1272,170],[1296,130],[1310,95],[1330,70],[1360,40],[1395,28],[1432,40],[1440,110],[1436,200],[1420,240],[1380,252],[1330,250]],   // schwebende Burg bis zu den hängenden Felsen
   lake: [[990,700],[1040,688],[1120,694],[1180,700],[1240,712],[1300,722],[1360,745],[1460,750],[1470,790],[1300,792],[1180,785],[1100,775],[1040,760],[995,745]],
   lights: [
     [[90,465],[255,465],[255,575],[90,575]],
@@ -664,8 +664,8 @@ function boxBlur(a, w, h, r, it = 2) {
     }
   }
 }
-// Abstand (in Bild-px) zum nächsten festen Pixel, zweimal durchlaufen (Chamfer), daraus ein weiches Gewicht 0..1
-function distWeight(free, w, h, ux, uy, R) {
+// Abstand (in Bild-px) zum nächsten festen Pixel, zweimal durchlaufen (Chamfer)
+function distField(free, w, h, ux, uy) {
   const d = new Float32Array(w * h), ud = Math.hypot(ux, uy), BIG = 1e6;
   for (let i = 0; i < d.length; i++) d[i] = free[i] > .5 ? BIG : 0;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
@@ -680,7 +680,6 @@ function distWeight(free, w, h, ux, uy, R) {
     if (y < h - 1) { v = Math.min(v, d[i + w] + uy); if (x < w - 1) v = Math.min(v, d[i + w + 1] + ud); if (x > 0) v = Math.min(v, d[i + w - 1] + ud); }
     d[i] = v;
   }
-  for (let i = 0; i < d.length; i++) { const t = Math.min(1, d[i] / R); d[i] = t * t * (3 - 2 * t); }
   return d;
 }
 function buildMasks() {
@@ -710,18 +709,35 @@ function buildMasks() {
     g.fillStyle = vgrad(360, [[0, 0], [.06, .1], [.3, .24], [.6, .38], [1, .55]]); g.fillRect(0, 360, IMG_W, IMG_H - 360);
     shape(SH.hill, .5, 4); shape(SH.bushR, .78, 4); shape(SH.fg, .88, 4); pip(.95, 9); shape(SH.hero, 1, 8);
   }, 9);
-  // Himmel, in dem die Wolken ziehen (ohne Held, Pip, Burg, Drache, Runenbogen, Linien, Sonne)
-  // Himmel, in dem die Wolken ziehen. Fest bleiben Held, Pip, Burgen, Drache, Runenbogen, Linien, Sonne und Horizont;
-  // die Bewegung wächst mit dem Abstand zu ihnen (voll ab 100 px), so wird nichts Festes mitgezogen oder verzerrt.
-  const skyFree = channel(() => {
+  // Himmel, in dem die Wolken ziehen. Fest bleiben Horizont und Türme, Held, Pip, Burgen, Sonne, Drachenkopf und Sichel.
+  // Die Verschiebung eines Pixels ist begrenzt durch seinen Abstand zum nächsten festen Element (im Shader):
+  // senkrecht 0,45 x Abstand, waagerecht 0,42 x Abstand mit senkrechten Schritten 1,6-fach gezählt. So gleiten die
+  // Wolken über dem Horizont weiter seitlich, nichts Festes wird mitgezogen und nirgends faltet sich das Bild.
+  // Linien, Runenbogen und Rauten liegen als eigene Lichtebene über den Wolken (siehe lightLayer im Shader).
+  const W2 = W >> 1, H2 = H >> 1;   // Abstände in halber Auflösung: genau genug und viermal schneller
+  const halfDist = (f, kx = 1, ky = 1) => {
+    const s2 = new Float32Array(W2 * H2), o = new Float32Array(N);
+    for (let y = 0; y < H2; y++) for (let x = 0; x < W2; x++) { const i = 2 * y * W + 2 * x; s2[y * W2 + x] = Math.min(f[i], f[i + 1], f[i + W], f[i + W + 1]); }
+    const d = distField(s2, W2, H2, kx * 2 / sx, ky * 2 / sy);
+    for (let y = 0; y < H; y++) {
+      const fy = clamp((y - .5) / 2, 0, H2 - 1), y0 = fy | 0, y1 = Math.min(H2 - 1, y0 + 1), ty = fy - y0;
+      for (let x = 0; x < W; x++) {
+        const fx = clamp((x - .5) / 2, 0, W2 - 1), x0 = fx | 0, x1 = Math.min(W2 - 1, x0 + 1), tx = fx - x0;
+        o[y * W + x] = (d[y0 * W2 + x0] * (1 - tx) + d[y0 * W2 + x1] * tx) * (1 - ty) + (d[y1 * W2 + x0] * (1 - tx) + d[y1 * W2 + x1] * tx) * ty;
+      }
+    }
+    return o;
+  };
+  const fixedMap = channel(() => {
     shape(SH.sky, 1);
-    shape(SH.hero, 0, 4); pip(0, 10); shape(SH.castle, 0, 3); shape(SH.flyCastle, 0, 3); shape(SH.hill, 0, 2);
-    DRAGON.forEach(([x, y, rx, ry, r]) => ell(x, y, rx, ry, r, 0, 2));
-    arcBand(24, 0);
-    LINES.forEach(([x, y0, y1]) => rect(x - 4, y0, x + 4, y1, 0, 2));
-    ell(SUN[0], SUN[1], 28, 28, 0, 0);
+    shape(SH.hero, 0, 4); pip(0, 10); shape(SH.hill, 0, 2); ell(SUN[0], SUN[1], 28, 28, 0, 0);
+    shape(SH.castle, 0, 3); shape(SH.flyCastle, 0, 3);
+    [0, 1, 3].forEach(k => { const [x, y, rx, ry, r] = DRAGON[k]; ell(x, y, rx, ry, r, 0, 2); });
+    ell(752, 158, 24, 34, 0, 0);   // linkes Ende des Runenbogens, wo er in helles Glühen übergeht
   }, 0);
-  const cloud = distWeight(skyFree, W, H, 1 / sx, 1 / sy, 100);
+  const dFree = halfDist(fixedMap), dSide = halfDist(fixedMap, 1, 1.6);
+  const cloud = new Float32Array(N), dVec = new Float32Array(N), dHor = new Float32Array(N);
+  for (let i = 0; i < N; i++) { cloud[i] = Math.min(1, dFree[i] / 6); dVec[i] = Math.min(1, dFree[i] / 160); dHor[i] = Math.min(1, dSide[i] / 256); }
   const falls = channel(() => FALLS.forEach(f => shape(f.pts, 1)), 1);
   const lava = channel(() => LAVA.forEach(f => shape(f.pts, 1)), 1);
   // Gefälle: 0 an der Kante oben, 1 unten; etwas breiter gemalt als der Fall selbst
@@ -751,7 +767,7 @@ function buildMasks() {
     for (let i = 0, j = 0; i < N; i++, j += 4) { o[j] = r ? r[i] * 255 : 0; o[j + 1] = gg ? gg[i] * 255 : 0; o[j + 2] = b ? b[i] * 255 : 0; o[j + 3] = a ? a[i] * 255 : 0; }
     return o;
   };
-  return { W, H, m0: pack(depth, cloud, falls, lava), m1: pack(lake, pipM, plants, lights), m2: pack(dragon, haze, fallProg, fallMist), m3: pack(front, null, null, null) };
+  return { W, H, m0: pack(depth, cloud, falls, lava), m1: pack(lake, pipM, plants, lights), m2: pack(dragon, haze, fallProg, fallMist), m3: pack(front, dVec, dHor, null) };
 }
 
 /* =====================================================================
@@ -769,7 +785,7 @@ uniform sampler2D uBlr;   // Keyart 1024x512 mit Mipmaps: Unschärfe, Strahlen
 uniform sampler2D uM0;    // r Tiefe  g Wolken  b Wasserfälle  a Lava
 uniform sampler2D uM1;    // r See    g Pip     b Pflanzen     a Lichter
 uniform sampler2D uM2;    // r Drache g Hitzeflimmern b Gefälle der Fälle a Dunst am Fuß
-uniform sampler2D uM3;    // r Vordergrund scharf (Held, Pip, Fels)
+uniform sampler2D uM3;    // r Vordergrund scharf (Held, Pip, Fels) g Abstand zum nächsten festen Element (/160 px) b dito, senkrecht 1,6-fach (/256 px)
 uniform vec2 uRes;
 uniform vec3 uCam;        // Bildmitte der Kamera (Bild-px) und Bild-px pro Canvas-px
 uniform vec2 uPar;        // Parallaxe in Bild-px (Tiefe 1)
@@ -783,6 +799,56 @@ float fbm(vec2 p){ float s = 0.0, a = 0.5; for (int i = 0; i < 4; i++){ s += a *
 vec3 tex(vec2 p){ p = IMG - abs(IMG - abs(p)); return texture2D(uImg, p / IMG).rgb; }
 vec3 blr(vec2 p, float b){ return texture2D(uBlr, p / IMG, b).rgb; }
 float lum(vec3 c){ return dot(c, vec3(0.2126, 0.7152, 0.0722)); }
+
+// Lichtebene: Runenbogen, senkrechte Linien und Rauten = Bild minus Hintergrund (quer zur Linie geschätzt).
+// So ziehen die Wolken frei hinter ihnen durch, während das Licht an seinem Platz bleibt.
+// Licht ist nur, was heller ist als beide Seiten daneben (die dünne Linie selbst, nicht helle Wolken).
+// Der Anteil wird über die Helligkeit bestimmt und behält die Farbe des Pixels (keine Farbsäume).
+vec3 lightOf(vec3 c, float bg){ float l = lum(c); return c * clamp((l - bg - 0.02) / max(l, 0.02), 0.0, 1.0); }
+float vBand(vec2 q, float x, float y0, float y1){
+  return (1.0 - smoothstep(4.0, 7.0, abs(q.x - x))) * smoothstep(y0 - 10.0, y0, q.y) * (1.0 - smoothstep(y1, y1 + 10.0, q.y));
+}
+vec3 lineL(vec2 q, vec3 c, float x){
+  vec3 a = tex(vec2(x - 10.0, q.y)), b = tex(vec2(x + 10.0, q.y));
+  return lightOf(c, max(lum(a), lum(b)));
+}
+vec3 nodeL(vec2 q, vec3 c, vec2 k, float r, inout float m){
+  float mm = 1.0 - smoothstep(r, r + 5.0, length(q - k));
+  if (mm <= 0.0) return vec3(0.0);
+  m = max(m, mm); float R = r + 9.0;
+  float bg = max(max(lum(tex(k + vec2(R, 0.0))), lum(tex(k - vec2(R, 0.0)))), max(lum(tex(k + vec2(0.0, R))), lum(tex(k - vec2(0.0, R)))));
+  return lightOf(c, bg) * mm;
+}
+vec3 lightLayer(vec2 q){
+  vec2 dq = q - vec2(1021.1, 332.5);
+  float r = length(dq), an = atan(dq.y, dq.x);
+  float mR = (1.0 - smoothstep(9.0, 13.0, abs(r - 324.0))) * smoothstep(-2.50, -2.44, an) * (1.0 - smoothstep(-0.56, -0.46, an));
+  float m1 = vBand(q, 721.0, 60.0, 365.0), m2 = vBand(q, 994.0, 0.0, 100.0), m3 = vBand(q, 1247.0, 180.0, 365.0), m4 = vBand(q, 1417.0, 0.0, 370.0);
+  float mN = 0.0;
+  mN = max(mN, 1.0 - smoothstep(17.0, 22.0, length(q - vec2(994.0, 12.0))));
+  mN = max(mN, 1.0 - smoothstep(9.0, 14.0, length(q - vec2(721.0, 118.0))));
+  mN = max(mN, 1.0 - smoothstep(10.0, 15.0, length(q - vec2(1247.0, 265.0))));
+  mN = max(mN, 1.0 - smoothstep(13.0, 18.0, length(q - vec2(1417.0, 105.0))));
+  if (mR + m1 + m2 + m3 + m4 + mN <= 0.0) return vec3(0.0);
+  vec3 c = tex(q), L = vec3(0.0);
+  if (mR > 0.0) {
+    vec2 n = dq / max(r, 1.0);
+    vec3 a = tex(vec2(1021.1, 332.5) + n * 310.0), b = tex(vec2(1021.1, 332.5) + n * 338.0);
+    L = max(L, lightOf(c, max(lum(a), lum(b))) * mR);
+  }
+  if (m1 > 0.0) L = max(L, lineL(q, c, 721.0) * m1);
+  if (m2 > 0.0) L = max(L, lineL(q, c, 994.0) * m2);
+  if (m3 > 0.0) L = max(L, lineL(q, c, 1247.0) * m3);
+  if (m4 > 0.0) L = max(L, lineL(q, c, 1417.0) * m4);
+  if (mN > 0.0) {
+    float mm = 0.0;
+    L = max(L, nodeL(q, c, vec2(994.0, 12.0), 17.0, mm));
+    L = max(L, nodeL(q, c, vec2(721.0, 118.0), 9.0, mm));
+    L = max(L, nodeL(q, c, vec2(1247.0, 265.0), 10.0, mm));
+    L = max(L, nodeL(q, c, vec2(1417.0, 105.0), 13.0, mm));
+  }
+  return L;
+}
 
 // Lichttropfen auf den senkrechten Linien unter dem Runenbogen
 float drop(vec2 p, float x, float y0, float y1, float sp, float ph){
@@ -798,6 +864,33 @@ float dia(vec2 p, vec2 c, float r, float ph){
   return exp(-m * m * 1.6) * (0.55 + 0.45 * sin(uT * 1.6 + ph));
 }
 
+// Wolken ziehen (oben schneller als am Horizont, leicht versetzt) und quellen dabei auf; rechts steigt Rauch.
+// Um das Wesen und am Horizont darunter wälzen sich die großen Wolkenballen kräftig und kreisen langsam um es herum.
+vec2 cloudShift(vec2 p, float T){
+  float hy = smoothstep(0.0, 380.0, p.y);
+  vec2 sc = (p - vec2(1120.0, 300.0)) / vec2(560.0, 240.0);
+  float storm = exp(-dot(sc, sc));
+  float dx = sin(T * 0.065 + hy * 0.7) * mix(16.0, 9.0, hy) + sin(T * 0.029 + 1.3 + hy * 1.4) * 7.0;
+  vec2 q = p * 0.0075;
+  vec2 b = vec2(noise(q + vec2(T * 0.09, 0.0)), noise(q + vec2(5.2, 1.3 + T * 0.08))) - 0.5;
+  vec2 b2 = vec2(noise(q * 2.1 + vec2(1.7, T * 0.13)), noise(q * 2.1 + vec2(8.1 + T * 0.12, 3.3))) - 0.5;
+  vec2 qb = p * 0.0042;
+  vec2 B = vec2(noise(qb + vec2(T * 0.26, 2.0)), noise(qb + vec2(7.3, T * 0.24))) - 0.5;
+  vec2 Bf = vec2(noise(q * 1.6 + vec2(T * 0.33, 4.4)), noise(q * 1.6 + vec2(2.9, -T * 0.31))) - 0.5;
+  vec2 r = p - vec2(1120.0, 300.0);
+  float ang = 0.075 * sin(T * 0.105);
+  vec2 swirl = vec2(cos(ang) * r.x - sin(ang) * r.y, sin(ang) * r.x + cos(ang) * r.y) - r;
+  float slide = 20.0 * sin(T * 0.095 + p.y * 0.006) + 8.0 * sin(T * 0.15 + 2.1 + p.y * 0.011);
+  float rise = 6.0 * smoothstep(1350.0, 1620.0, p.x) * (0.5 + 0.5 * sin(T * 0.06));
+  return vec2(dx, -rise) + b * 16.0 + b2 * 5.0 + (B * 46.0 + Bf * 15.0 + vec2(slide, 0.0) + swirl) * storm;
+}
+// weich begrenzt: senkrecht auf 0,45 x Abstand zum nächsten festen Element, waagerecht auf 0,42 x Abstand,
+// bei dem senkrechte Schritte 1,6-fach zählen (g, gh siehe buildMasks)
+float softLimit(float v, float a){ float x = abs(v) / 64.0, b = a / 64.0; return v * b / max(pow(x * x * x * x + b * b * b * b, 0.25), 1e-4); }
+vec2 limitShift(vec2 d, float g, float gh){
+  return vec2(softLimit(d.x, 0.42 * max(0.0, gh * 256.0 - 3.0)), softLimit(d.y, 0.45 * max(0.0, g * 160.0 - 3.0)));
+}
+
 void main(){
   vec2 sp = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
   vec2 p0 = uCam.xy + (sp - 0.5 * uRes) * uCam.z;
@@ -805,7 +898,8 @@ void main(){
   vec2 p = p0 - uPar * (0.15 + depth);
   vec2 uv = p / IMG;
   vec4 m0 = texture2D(uM0, uv), m1 = texture2D(uM1, uv), m2 = texture2D(uM2, uv);
-  float front = texture2D(uM3, uv).r;
+  vec4 m3 = texture2D(uM3, uv);
+  float front = m3.r;
   float T = uT, M = uMot;
   vec2 pv = p;                       // sichtbare Stelle, für Leuchteffekte
 
@@ -822,7 +916,7 @@ void main(){
   // Drache: wabert wie Rauch
   if (m2.r > 0.002) {
     vec2 n = vec2(noise(p * 0.016 + vec2(T * 0.05, -T * 0.03)), noise(p * 0.016 + vec2(5.2, 1.3) - vec2(T * 0.04, T * 0.025))) - 0.5;
-    p += n * 4.0 * m2.r * M;
+    p += n * 5.0 * m2.r * M;
   }
   // Pflanzen im Wind
   if (m1.b > 0.002) {
@@ -837,19 +931,16 @@ void main(){
   // Hitzeflimmern über der Lava
   if (m2.g > 0.002) p.x += sin(p.y * 0.35 + T * 5.0) * 0.9 * m2.g * M;
 
-  // Wolken ziehen (oben schneller als am Horizont, leicht versetzt) und quellen dabei langsam auf; rechts steigt Rauch.
-  // Das Gewicht m0.g kommt aus dem Abstand zu allem, was fest bleibt (siehe distWeight).
+  // Wolkenbewegung (cloudShift, limitShift); Linien, Bogen und Rauten bleiben als Lichtebene an ihrem Platz
+  vec3 lightFix = vec3(0.0);
   if (m0.g > 0.002) {
-    float cw = m0.g, hy = smoothstep(0.0, 380.0, p.y);
-    float dx = sin(T * 0.065 + hy * 0.7) * mix(16.0, 9.0, hy) + sin(T * 0.029 + 1.3 + hy * 1.4) * 7.0;
-    vec2 q = p * 0.0075;
-    vec2 b = vec2(noise(q + vec2(T * 0.09, 0.0)), noise(q + vec2(5.2, 1.3 + T * 0.08))) - 0.5;
-    vec2 b2 = vec2(noise(q * 2.1 + vec2(1.7, T * 0.13)), noise(q * 2.1 + vec2(8.1 + T * 0.12, 3.3))) - 0.5;
-    float rise = 6.0 * smoothstep(1350.0, 1620.0, p.x) * (0.5 + 0.5 * sin(T * 0.06));
-    p += (vec2(dx, -rise) + b * 16.0 + b2 * 5.0) * cw * M;
+    vec2 d = limitShift(cloudShift(p, T) * M, m3.g, m3.b);
+    vec2 p0c = p;
+    p += d;
+    lightFix = lightLayer(p0c) - lightLayer(p);
   }
 
-  vec3 col = tex(p);
+  vec3 col = tex(p) + lightFix;
   // Dunst am Fuß der Fälle quillt (nur der helle Dunst, nicht der Fels)
   if (m2.a > 0.01 && M > 0.0) {
     vec2 d = (vec2(noise(p * 0.05 + vec2(T * 0.25, 0.0)), noise(p * 0.05 + vec2(3.3, -T * 0.3))) - 0.5) * 4.0 * M;
@@ -948,7 +1039,7 @@ void main(){
   }
 
   if (uDbg > 0.5) {
-    vec3 dc = vec3(0.2, 0.5, 1.0) * m0.g + vec3(0.0, 1.0, 1.0) * m0.b + vec3(1.0, 0.3, 0.0) * m0.a + vec3(0.0, 0.6, 1.0) * m1.r
+    vec3 dc = vec3(0.2, 0.5, 1.0) * m0.g * clamp(m3.g * 160.0 / 60.0, 0.0, 1.0) + vec3(0.0, 1.0, 1.0) * m0.b + vec3(1.0, 0.3, 0.0) * m0.a + vec3(0.0, 0.6, 1.0) * m1.r
             + vec3(1.0, 0.0, 1.0) * m1.g + vec3(0.3, 1.0, 0.2) * m1.b + vec3(1.0, 1.0, 0.0) * m1.a * 0.5 + vec3(0.8, 0.0, 0.3) * m2.r
             + vec3(m2.b, 0.2, 1.0 - m2.b) * max(m0.b, m0.a) * 0.8 + vec3(0.9) * m2.a * 0.5;
     col = mix(col, dc + vec3(depth) * 0.35, 0.6);
@@ -1904,7 +1995,7 @@ async function boot() {
   const img = new Image(); img.src = KEYART;
   try { await img.decode(); } catch (e) { await new Promise(r => { if (img.complete) r(); else { img.onload = r; img.onerror = r; } }); }
   let gl = false;
-  try { gl = Scene.init(img, buildMasks()); } catch (e) { console.warn(e); gl = false; }
+  try { const t0 = performance.now(), mk = buildMasks(); console.info(`Masken ${Math.round(performance.now() - t0)} ms`); gl = Scene.init(img, mk); } catch (e) { console.warn(e); gl = false; }
   if (!gl) { html.classList.add('nogl'); $('#bgImg').src = KEYART; }
   Fx.init();
   Menu.build(); Settings.build(); Load.build(img); Credits.build(); Dialog.build(); setHints('menu');
