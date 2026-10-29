@@ -10,17 +10,22 @@ Eckklammern, Kupferwinkel an den Fenstern, gleiche Fenster-Projektion.
 
 ## Was zu sehen ist
 
-- **Hintergrund:** Die Keyart lebt. Ein WebGL-Shader bewegt sie:
-  - Wolken ziehen, Rauch steigt rechts auf
-  - Wasserfälle und Lavafälle fließen, über der Lava flimmert die Luft
+- **Hintergrund:** Die Keyart, farblich ans UI angepasst und leise bewegt (WebGL).
+  - Farbe ist eingerechnet: weniger Sättigung, weiche Lichter statt HDR-Glühen,
+    Schatten zum Petrol des UI, Dunst in der Ferne, dunklerer Vordergrund, Nachtseite rechts
+    hinter dem Menü. Held und Pip bleiben wie im Original.
+  - Wasserfälle: Nur das Wasser innerhalb des genauen Umrisses bewegt sich. Streifen laufen
+    nach unten und werden schneller, Fels und Brücke daneben bleiben stehen. Am Fuß quillt Dunst.
+  - Lavafälle fließen langsamer und glühen leise, darüber flimmert die Luft
+  - Wolken ziehen sehr langsam hin und her, an Burg, Held und Drache bleibt der Himmel ruhig
   - der See kräuselt sich, Pflanzen im Vordergrund wiegen sich im Wind
   - Pip schwebt und kippt leicht, Auge und Kern leuchten
-  - der Drache wabert wie Rauch, sein Auge glimmt und flammt ab und zu auf
-  - Lichtimpulse laufen über den Runenbogen, Lichttropfen über die senkrechten Linien
-  - Sonnenstrahlen mit Schattenstrahlen am Helden, Wolkenschatten über dem Tal
-  - Nebel treibt durchs Tal, die Lichter der Städte flackern leise
-  - dazu Glut über der Lavastadt, Staub im Sonnenlicht, Funken am Bogen und ab und zu Vögel
+  - der Drache wabert leicht, sein Auge glimmt
+  - leise Lichtimpulse auf dem Runenbogen und den senkrechten Linien
+  - Nebel treibt durchs Tal, die Lichter der Städte flackern kaum merklich
+  - etwas Glut über der Lavastadt, ab und zu Vögel
   - die Kamera fährt langsam und folgt leicht der Maus (rechter Stick am Controller)
+  - bewusst weggelassen: Sonnenstrahlen, Funken, Staub und starkes Leuchten
 - **Intro:** Die Szene taucht aus dem Dunkel auf, die Lichter gehen nacheinander an.
   Die Schiene zeichnet sich von oben nach unten, die Menüpunkte schärfen sich nacheinander ein.
 - **Menü rechts**, Titel kommt später (Platz rechts oben bleibt frei, siehe unten):
@@ -101,7 +106,11 @@ Für die Umsetzung in Godot:
 
 - Hintergrund: Im Spiel ersetzt eine echte Szene oder die Keyart mit einem Shader den WebGL-Teil.
   Die Bereiche (Masken) sind im Code als Polygone beschrieben (`SH`, `FALLS`, `LAVA` usw.)
-  und lassen sich als Maskentextur exportieren oder neu malen.
+  und lassen sich als Maskentextur exportieren oder neu malen. Die Umrisse von Held und Pip
+  sind aus den Kanten im Bild abgeleitet, die Beine nachgezeichnet.
+- Farbabstimmung: Sie ist fest ins eingebettete Bild gerechnet. Die Werte stehen auch so im Code
+  (Sättigung etwa 0,6 bis 0,85, Lichter ab 0,56 weich abgerollt, Schatten zu `#0e161d`, Lichter
+  leicht kupfern, rechts bis zu 30 % dunkler) und lassen sich in Godot als Color-Grading übernehmen.
 - Menüpunkte: `Button` mit eigenem Theme-Stil; Lichtfläche, Eckklammern und Kupferbalken als
   ein gemeinsamer Cursor, der per `Tween` zum fokussierten Punkt fährt.
 - Fokus: Hover setzt den Fokus, wie bei Tastatur und Controller.
