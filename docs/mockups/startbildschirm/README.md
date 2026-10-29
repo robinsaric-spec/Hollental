@@ -17,7 +17,9 @@ Eckklammern, Kupferwinkel an den Fenstern, gleiche Fenster-Projektion.
   - Wasserfälle: Nur das Wasser innerhalb des genauen Umrisses bewegt sich. Streifen laufen
     nach unten und werden schneller, Fels und Brücke daneben bleiben stehen. Am Fuß quillt Dunst.
   - Lavafälle fließen langsamer und glühen leise, darüber flimmert die Luft
-  - Wolken ziehen sehr langsam hin und her, an Burg, Held und Drache bleibt der Himmel ruhig
+  - Wolken ziehen (oben schneller als am Horizont) und quellen dabei langsam auf, rechts steigt Rauch.
+    Die Bewegung wächst mit dem Abstand zu Held, Pip, Burgen, Drache, Runenbogen und Linien,
+    daher wird nichts Festes mitgezogen oder verzerrt.
   - der See kräuselt sich, Pflanzen im Vordergrund wiegen sich im Wind
   - Pip schwebt und kippt leicht, Auge und Kern leuchten
   - der Drache wabert leicht, sein Auge glimmt

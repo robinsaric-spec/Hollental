@@ -664,6 +664,25 @@ function boxBlur(a, w, h, r, it = 2) {
     }
   }
 }
+// Abstand (in Bild-px) zum nächsten festen Pixel, zweimal durchlaufen (Chamfer), daraus ein weiches Gewicht 0..1
+function distWeight(free, w, h, ux, uy, R) {
+  const d = new Float32Array(w * h), ud = Math.hypot(ux, uy), BIG = 1e6;
+  for (let i = 0; i < d.length; i++) d[i] = free[i] > .5 ? BIG : 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = y * w + x; let v = d[i]; if (!v) continue;
+    if (x > 0) v = Math.min(v, d[i - 1] + ux);
+    if (y > 0) { v = Math.min(v, d[i - w] + uy); if (x > 0) v = Math.min(v, d[i - w - 1] + ud); if (x < w - 1) v = Math.min(v, d[i - w + 1] + ud); }
+    d[i] = v;
+  }
+  for (let y = h - 1; y >= 0; y--) for (let x = w - 1; x >= 0; x--) {
+    const i = y * w + x; let v = d[i]; if (!v) continue;
+    if (x < w - 1) v = Math.min(v, d[i + 1] + ux);
+    if (y < h - 1) { v = Math.min(v, d[i + w] + uy); if (x < w - 1) v = Math.min(v, d[i + w + 1] + ud); if (x > 0) v = Math.min(v, d[i + w - 1] + ud); }
+    d[i] = v;
+  }
+  for (let i = 0; i < d.length; i++) { const t = Math.min(1, d[i] / R); d[i] = t * t * (3 - 2 * t); }
+  return d;
+}
 function buildMasks() {
   const W = 1024, H = 512, N = W * H, sx = W / IMG_W, sy = H / IMG_H;
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
@@ -692,14 +711,17 @@ function buildMasks() {
     shape(SH.hill, .5, 4); shape(SH.bushR, .78, 4); shape(SH.fg, .88, 4); pip(.95, 9); shape(SH.hero, 1, 8);
   }, 9);
   // Himmel, in dem die Wolken ziehen (ohne Held, Pip, Burg, Drache, Runenbogen, Linien, Sonne)
-  const cloud = channel(() => {
+  // Himmel, in dem die Wolken ziehen. Fest bleiben Held, Pip, Burgen, Drache, Runenbogen, Linien, Sonne und Horizont;
+  // die Bewegung wächst mit dem Abstand zu ihnen (voll ab 100 px), so wird nichts Festes mitgezogen oder verzerrt.
+  const skyFree = channel(() => {
     shape(SH.sky, 1);
-    shape(SH.hero, 0, 16); pip(0, 18); shape(SH.castle, 0, 9); shape(SH.flyCastle, 0, 8); shape(SH.hill, 0, 6);
-    DRAGON.forEach(([x, y, rx, ry, r]) => ell(x, y, rx, ry, r, 0, 6));
-    arcBand(34, 0);
-    LINES.forEach(([x, y0, y1]) => rect(x - 8, y0, x + 8, y1, 0, 4));
-    ell(SUN[0], SUN[1], 30, 30, 0, 0);
-  }, 7);
+    shape(SH.hero, 0, 4); pip(0, 10); shape(SH.castle, 0, 3); shape(SH.flyCastle, 0, 3); shape(SH.hill, 0, 2);
+    DRAGON.forEach(([x, y, rx, ry, r]) => ell(x, y, rx, ry, r, 0, 2));
+    arcBand(24, 0);
+    LINES.forEach(([x, y0, y1]) => rect(x - 4, y0, x + 4, y1, 0, 2));
+    ell(SUN[0], SUN[1], 28, 28, 0, 0);
+  }, 0);
+  const cloud = distWeight(skyFree, W, H, 1 / sx, 1 / sy, 100);
   const falls = channel(() => FALLS.forEach(f => shape(f.pts, 1)), 1);
   const lava = channel(() => LAVA.forEach(f => shape(f.pts, 1)), 1);
   // Gefälle: 0 an der Kante oben, 1 unten; etwas breiter gemalt als der Fall selbst
@@ -758,7 +780,7 @@ float hash(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx 
 float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
   return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y); }
 float fbm(vec2 p){ float s = 0.0, a = 0.5; for (int i = 0; i < 4; i++){ s += a * noise(p); p = p * 2.03 + 17.1; a *= 0.5; } return s / 0.9375; }
-vec3 tex(vec2 p){ return texture2D(uImg, p / IMG).rgb; }
+vec3 tex(vec2 p){ p = IMG - abs(IMG - abs(p)); return texture2D(uImg, p / IMG).rgb; }
 vec3 blr(vec2 p, float b){ return texture2D(uBlr, p / IMG, b).rgb; }
 float lum(vec3 c){ return dot(c, vec3(0.2126, 0.7152, 0.0722)); }
 
@@ -815,13 +837,16 @@ void main(){
   // Hitzeflimmern über der Lava
   if (m2.g > 0.002) p.x += sin(p.y * 0.35 + T * 5.0) * 0.9 * m2.g * M;
 
-  // Wolken ziehen langsam hin und her (ohne Sprung) und wabern leise; rechts steigt Rauch
+  // Wolken ziehen (oben schneller als am Horizont, leicht versetzt) und quellen dabei langsam auf; rechts steigt Rauch.
+  // Das Gewicht m0.g kommt aus dem Abstand zu allem, was fest bleibt (siehe distWeight).
   if (m0.g > 0.002) {
-    // an Burg, Held und Drache bleibt der Himmel stehen; weiter weg zieht er (weicher Übergang, kein Verzerren)
-    float cw = smoothstep(0.3, 1.0, m0.g);
-    float dx = sin(T * 0.05) * 10.0 + sin(T * 0.021 + 1.3) * 5.0;
-    vec2 w = vec2(noise(p * 0.011 + vec2(T * 0.05, 0.0)), noise(p * 0.011 + vec2(4.1, T * 0.045))) - 0.5;
-    p += (vec2(dx * mix(1.0, 0.55, smoothstep(0.0, 380.0, p.y)), -3.0 * smoothstep(1350.0, 1620.0, p.x) * sin(T * 0.05)) + w * 4.0) * cw * M;
+    float cw = m0.g, hy = smoothstep(0.0, 380.0, p.y);
+    float dx = sin(T * 0.065 + hy * 0.7) * mix(16.0, 9.0, hy) + sin(T * 0.029 + 1.3 + hy * 1.4) * 7.0;
+    vec2 q = p * 0.0075;
+    vec2 b = vec2(noise(q + vec2(T * 0.09, 0.0)), noise(q + vec2(5.2, 1.3 + T * 0.08))) - 0.5;
+    vec2 b2 = vec2(noise(q * 2.1 + vec2(1.7, T * 0.13)), noise(q * 2.1 + vec2(8.1 + T * 0.12, 3.3))) - 0.5;
+    float rise = 6.0 * smoothstep(1350.0, 1620.0, p.x) * (0.5 + 0.5 * sin(T * 0.06));
+    p += (vec2(dx, -rise) + b * 16.0 + b2 * 5.0) * cw * M;
   }
 
   vec3 col = tex(p);
