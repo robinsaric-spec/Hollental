@@ -580,6 +580,28 @@ kbd{font-family:var(--ui-c);font-weight:600;font-size:13px;min-width:28px;text-a
 .side .bar{height:56px}
 .side .bottom{left:8px;right:8px;bottom:8px}
 .divider{margin:0 14px 8px}
+
+/* ---------- Sockel-Effekt (Typ steigt aus dem Projektor) ---------- */
+.pfx{position:absolute;left:282px;top:180px;width:600px;height:452px;pointer-events:none}
+.dexstage .pfx{left:0;top:60px;width:546px;height:340px;z-index:3}
+/* Vorschau-Werkzeug: andere Typen am Sockel ausprobieren (nur Skizze) */
+.fxtest{position:absolute;right:84px;top:22px;z-index:26;height:30px;padding:0 12px 0 10px;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-2);border-radius:2px;background:#0a1117cc;font-family:var(--ui-c);font-weight:600;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);transition:border-color .2s,color .2s}
+.fxtest:hover,.fxtest[aria-expanded="true"]{border-color:var(--line-3);color:var(--ink)}
+.fxtest svg{width:14px;height:14px}
+.fxpick{position:absolute;right:0;bottom:40px;width:882px;height:120px;z-index:6;display:flex;align-items:center;gap:22px;padding:0 18px 0 24px;border-radius:3px;background:linear-gradient(180deg,#0e1a24f5,#0a131af5);border:1px solid #3f7f92;box-shadow:0 0 0 1px #04080c,0 18px 40px #000b;animation:tabIn .3s var(--ease-out)}
+.fxpick[hidden]{display:none}
+.fxpick .fxk{width:170px;font-family:var(--ui-c);font-weight:600;font-size:14px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink)}
+.fxpick .fxk small{display:block;margin-top:6px;font-family:var(--ui);font-weight:500;font-size:13px;letter-spacing:0;text-transform:none;color:var(--ink-3);line-height:1.35}
+.fxrows{display:flex;flex-direction:column;gap:6px}
+.fxrow{display:flex;align-items:center;gap:3px}
+.fxrow > span{width:54px;font-family:var(--ui-c);font-weight:600;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.fxb{width:34px;height:34px;border-radius:2px;border:1px solid transparent;display:grid;place-items:center;transition:border-color .2s,background .2s}
+.fxb .ty{width:28px;height:28px}
+.fxb:hover{border-color:var(--line-2)}
+.fxb[aria-pressed="true"]{border-color:var(--tc,#6fd3e6);background:color-mix(in srgb,var(--tc,#6fd3e6) 16%,transparent)}
+.fxb.none{font-family:var(--ui-c);font-weight:600;font-size:16px;color:var(--ink-3)}
+.fxpick .fxx{margin-left:auto;align-self:flex-start;margin-top:12px;width:30px;height:30px;border:1px solid var(--line-2);border-radius:2px;display:grid;place-items:center;color:var(--ink-2)}
+.fxpick .fxx:hover{border-color:var(--line-3);color:var(--ink)}
 .target.no{animation:shake .32s}
 .catdot{display:inline-block;width:7px;height:7px;margin-right:2px;transform:rotate(45deg);background:var(--cc)}
 
@@ -677,7 +699,9 @@ kbd{font-family:var(--ui-c);font-weight:600;font-size:13px;min-width:28px;text-a
             <div class="lenspool" id="lenspool"></div>
             <div class="proj" id="proj"></div>
             <div class="fx" id="fxBack"></div>
+            <div class="pfx" id="pfxBack"></div>
             <div class="creature" id="creature" role="button" tabindex="-1" aria-label="Hologramm scannen"></div>
+            <div class="pfx" id="pfxFront"></div>
             <div class="fx" id="fxFront"></div>
           </div>
           <div class="layer d-near" id="dNear"></div>
@@ -697,6 +721,7 @@ kbd{font-family:var(--ui-c);font-weight:600;font-size:13px;min-width:28px;text-a
             <button class="btn ghost" id="btnDetails">Dex-Eintrag</button>
             <button class="btn primary" id="btnFollow"><svg class="ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><span>Begleiten</span></button>
           </div>
+          <button class="fxtest" id="fxTestBtn" aria-expanded="false" title="Sockel-Effekt mit anderen Typen ansehen (Taste T)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg>Effekt testen</button>
           <div class="dframe" aria-hidden="true">
             <div class="inner"></div>
             <svg class="orn tl"><use href="#orn"/></svg><svg class="orn tr"><use href="#orn"/></svg>
@@ -724,7 +749,9 @@ kbd{font-family:var(--ui-c);font-weight:600;font-size:13px;min-width:28px;text-a
             <div class="lenspool" id="dexPool"></div>
             <div class="proj" id="dexProj"></div>
             <div class="dexsil" id="dexSil"></div>
+            <div class="pfx b" id="dexPfxB"></div>
             <div class="dexcv" id="dexCv"></div>
+            <div class="pfx f" id="dexPfxF"></div>
             <div class="nodata" id="dexNoData">Keine Daten</div>
           </div>
           <div class="dex-text">
@@ -837,6 +864,7 @@ kbd{font-family:var(--ui-c);font-weight:600;font-size:13px;min-width:28px;text-a
         <div class="vsep"></div>
         <button class="bag" id="bagBtn"><svg viewBox="0 0 24 24" fill="none" stroke="#e3e9ed" stroke-width="1.5" stroke-linejoin="round"><use href="#i-bag"/></svg>Beutel öffnen<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#e3e9ed" stroke-width="1.8" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></button>
       </div>
+      <div class="fxpick" id="fxPick" hidden><div class="fxk">Sockel-Effekt testen<small>Nur Vorschau: zeigt, wie andere Typen am Sockel aussehen.</small></div><div class="fxrows"><div class="fxrow"><span>Typ 1</span><div id="fxA" style="display:flex;gap:3px"></div></div><div class="fxrow"><span>Typ 2</span><div id="fxB" style="display:flex;gap:3px"></div></div></div><button class="fxx" id="fxClose" aria-label="Vorschau schließen"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
       <div class="hints"><kbd>Tab</kbd>Wechseln<span class="sep"></span><kbd>Esc</kbd>Schließen</div>
     </main>
   </section>
@@ -1246,6 +1274,399 @@ const TypeFX = (() => {
   // nur für Tests: Zeit anhalten und setzen
   const debug = { freeze(v) { frozen = v; }, setT(t) { inst.forEach(i => i.T = t); }, get inst() { return inst; }, lost: () => !!gl && gl.isContextLost() };
   return { init, mount, flare, setActive, tick, debug, get ok() { return avail; } };
+})();
+
+</script>
+<script>
+/* =====================================================================
+   Sockel-Effekt: Aus dem Projektor-Sockel steigt eine leise Animation, die
+   den Typ des Wesens zeigt. Bei zwei Typen laufen beide mit halber Dichte,
+   und ihre Farben gehen ineinander über (Flammenspitzen nehmen etwa die
+   Farbe des zweiten Typs an).
+   Zwei Ebenen: hinter dem Wesen (hinterer Sockelrand) und davor (vorderer
+   Rand). Ein WebGL-Kontext zeichnet beide Ebenen und kopiert sie in je eine
+   2D-Canvas. Godot: ColorRect mit CanvasItem-Shader unter/über dem Wesen,
+   gleiche Formeln, Typen als Uniforms.
+   ===================================================================== */
+const PFX_VS = `attribute vec2 aP;varying vec2 vUv;
+void main(){vUv=vec2(aP.x*0.5+0.5,0.5-aP.y*0.5);gl_Position=vec4(aP,0.0,1.0);}`;
+const PFX_FS = `#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+varying vec2 vUv;
+uniform vec2 uSize;uniform vec4 uRim;
+uniform float uT,uLayer,uAmp,uRise,uK,uA,uB;
+uniform vec3 uColA,uColB;
+#define PI 3.14159265
+vec2 P;float LAY,K,RISE;vec3 gL;vec4 gS;
+float h1(float n){return fract(sin(n*127.1+311.7)*43758.5453);}
+float hash(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
+float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
+ return mix(mix(hash(i),hash(i+vec2(1.0,0.0)),f.x),mix(hash(i+vec2(0.0,1.0)),hash(i+vec2(1.0,1.0)),f.x),f.y);}
+float fbm(vec2 p){return vn(p)*0.55+vn(p*2.03+1.7)*0.3+vn(p*4.1+3.3)*0.15;}
+float gd(vec2 p,vec2 c,float r){vec2 d=p-c;return exp(-dot(d,d)/(r*r));}
+vec2 rv(vec2 p,float a){float s=sin(a),k=cos(a);return vec2(k*p.x-s*p.y,s*p.x+k*p.y);}
+vec2 rimPt(float th,float sc){return uRim.xy+vec2(cos(th)*uRim.z,sin(th)*uRim.w)*sc;}
+float ang(float sd){float a=h1(sd)*6.2832;return a-0.3*sin(2.0*a);}   // Startwinkel am Rand, leicht zu den Seiten hin verschoben
+bool skip(float th){return abs(step(0.0,sin(th))-LAY)>0.5;}          // Teilchen gehört zur anderen Ebene (vorne/hinten)
+bool far(vec2 p,float r){return abs(P.x-p.x)>r||abs(P.y-p.y)>r;}      // schnelle Begrenzung
+float layMask(float qy){return LAY>0.5?smoothstep(-0.12,0.12,qy):1.0-smoothstep(-0.12,0.12,qy);}
+float segD(vec2 p,vec2 a,vec2 b){vec2 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);return length(pa-ba*h);}
+float rimBand(float w){vec2 q=(P-uRim.xy)/uRim.zw;return exp(-pow((length(q)-1.0)*uRim.w/(w*K),2.0))*layMask(q.y);}
+float star4(vec2 d,float r){d=abs(d);return exp(-dot(d,d)/(r*r*0.12))+0.55*exp(-d.x/(r*0.09))*exp(-d.y/r)+0.55*exp(-d.y/(r*0.09))*exp(-d.x/r);}
+void light(vec3 c){gL+=c;}
+void solid(vec3 c,float a){gS.rgb=c*a+gS.rgb*(1.0-a);gS.a=a+gS.a*(1.0-a);}
+// ---------------- 0 Norm: silberne Funken steigen auf, eine ruhige Lichtwelle
+void fxNorm(float d,vec3 col,vec3 oth,float mx){
+ vec3 tc=mix(vec3(0.86,0.92,0.98),oth,0.25*mx);
+ for(int i=0;i<12;i++){float fi=float(i);if(fi>=12.0*d)break;
+  float th=ang(fi*3.7+1.0);if(skip(th))continue;
+  float ph=fract(uT/(6.0+h1(fi*2.3)*3.0)+h1(fi*5.1));
+  vec2 p=rimPt(th,0.5+0.45*h1(fi*7.3))+vec2(sin(ph*4.0+fi)*7.0*K,-ph*150.0*K*RISE);
+  if(far(p,14.0*K))continue;
+  float tw=0.55+0.45*sin(uT*3.0+fi*2.3);
+  light(tc*(star4(P-p,(4.0+3.0*h1(fi*4.1))*K)*tw*0.45+gd(P,p,1.6*K)*0.45)*sin(ph*PI));}
+ for(int k=0;k<2;k++){float w=fract(uT*0.12+float(k)*0.5);vec2 c=uRim.xy+vec2(0.0,-w*80.0*K*RISE);vec2 rr=uRim.zw*(1.0-w*0.2);
+  vec2 q=(P-c)/rr;light(tc*exp(-pow((length(q)-1.0)*rr.y/(1.8*K),2.0))*sin(w*PI)*0.2*layMask(q.y));}}
+// ---------------- 1 Brandt: Flammenzungen in wandernden Abschnitten des Randes, Glut steigt auf
+void fxBrandt(float d,vec3 col,vec3 oth,float mx){
+ float u=(P.x-uRim.x)/uRim.z;
+ if(abs(u)<0.99){
+  float sq=sqrt(1.0-u*u),yr=uRim.y+(LAY>0.5?1.0:-1.0)*uRim.w*sq,h=yr-P.y;
+  float seg=smoothstep(0.32,0.62,vn(vec2(u*2.4+uT*0.1,LAY*7.0+3.0)));
+  float H=(16.0+30.0*vn(vec2(P.x*0.022/K,uT*0.55)))*K*RISE*(LAY>0.5?0.8:1.0)*seg;
+  if(H>0.5&&h>-4.0*K&&h<H*1.3){
+   float nz=fbm(vec2(P.x*0.055/K,P.y*0.04/K+uT*2.3)),f=clamp(1.0-h/H,0.0,1.0);
+   float fl=smoothstep(0.5,0.8,nz*0.8+f*0.62)*smoothstep(-3.0*K,1.5*K,h)*smoothstep(0.99,0.85,abs(u));
+   vec3 fc=mix(vec3(1.0,0.88,0.6),vec3(1.0,0.36,0.08),smoothstep(0.85,0.2,f));
+   light(mix(fc,oth,(1.0-f)*0.6*mx)*fl*0.85);}
+  light(vec3(1.0,0.45,0.12)*exp(-abs(h)/(10.0*K))*(0.05+0.09*seg)*smoothstep(0.99,0.7,abs(u)));}
+ for(int i=0;i<16;i++){float fi=float(i);if(fi>=16.0*d)break;
+  float th=ang(fi*7.1+2.0);if(skip(th))continue;
+  float ph=fract(uT/(2.4+h1(fi*1.9)*2.0)+h1(fi*4.3));
+  vec2 p=rimPt(th,1.0)+vec2(sin(ph*5.0+fi)*12.0*K*ph,-ph*(70.0+70.0*h1(fi))*K*RISE);
+  if(far(p,9.0*K))continue;
+  vec3 ec=mix(mix(vec3(1.0,0.85,0.5),vec3(1.0,0.35,0.1),ph),oth,0.35*mx);
+  light(ec*(gd(P,p,1.7*K)+gd(P,p,5.0*K)*0.08)*sin(ph*PI)*(0.75+0.25*sin(uT*21.0+fi*3.0)));}}
+// ---------------- 2 Erde: Kiesel lösen sich vom Rand und schweben, feiner Staub
+void pebble(vec2 p,float r,float rot,float fi,float vis,vec3 tint){
+ if(vis<0.01||far(p,r*1.5))return;
+ vec2 dd=rv(P-p,rot);
+ float sh=length(dd*vec2(1.0,1.25))*(1.0+0.15*sin(atan(dd.y,dd.x)*5.0+fi*2.0));
+ float body=smoothstep(r,r*0.84,sh)*vis,lit=clamp(0.5-(dd.x*0.45+dd.y)/r*0.6,0.0,1.0);
+ solid(mix(vec3(0.26,0.2,0.14),vec3(0.66,0.54,0.38),lit)+tint*0.06,body*0.95);
+ light(vec3(1.0,0.82,0.55)*(smoothstep(r*0.99,r*0.84,sh)*smoothstep(r*0.6,r*0.9,sh)*lit*0.45+gd(P,p,r*2.2)*0.05)*vis);}
+void fxErde(float d,vec3 col,vec3 oth,float mx){
+ vec3 tint=mix(col,oth,0.4*mx);
+ for(int i=0;i<10;i++){float fi=float(i);if(fi>=10.0*d)break;
+  float th=ang(fi*5.3+3.0);if(skip(th))continue;
+  float ph=fract(uT/(7.0+h1(fi)*4.0)+h1(fi*3.3)),lift=smoothstep(0.0,0.25,ph)*(1.0-smoothstep(0.78,1.0,ph));
+  vec2 p=rimPt(th,0.97)+vec2(sin(uT*0.5+fi)*4.0*K,-(12.0+48.0*h1(fi*5.0))*K*lift*RISE+sin(uT*1.3+fi)*2.5*K);
+  pebble(p,(5.5+5.0*h1(fi*9.0))*K,uT*(h1(fi*2.0)-0.5)*1.2,fi,lift,tint);}
+ for(int i=0;i<12;i++){float fi=float(i);if(fi>=12.0*d)break;
+  float th=ang(fi*9.7+5.0);if(skip(th))continue;
+  float ph=fract(uT/(6.0+h1(fi*4.0)*4.0)+h1(fi*6.1));
+  vec2 p=rimPt(th,0.7+0.35*h1(fi))+vec2(sin(ph*3.0+fi)*8.0*K,-ph*60.0*K*RISE);
+  if(far(p,5.0*K))continue;
+  light(vec3(0.8,0.64,0.4)*gd(P,p,1.4*K)*sin(ph*PI)*0.45);}
+ light(vec3(0.7,0.55,0.35)*fbm(vec2(P.x*0.02/K+uT*0.04,P.y*0.05/K))*rimBand(10.0)*0.12);}
+// ---------------- 3 Flut: Wellenringe auf der Linse, Luftblasen, Wasser rinnt vorne über den Rand
+void fxFlut(float d,vec3 col,vec3 oth,float mx){
+ vec3 wc=mix(vec3(0.45,0.8,1.0),oth,0.2*mx);
+ for(int k=0;k<3;k++){float w=fract(uT*0.22+float(k)/3.0);vec2 rr=uRim.zw*(0.15+w*0.75);
+  vec2 q=(P-uRim.xy)/rr;light(wc*exp(-pow((length(q)-1.0)*rr.y/(1.3*K),2.0))*(1.0-w)*smoothstep(0.0,0.15,w)*0.3*layMask(q.y));}
+ for(int i=0;i<10;i++){float fi=float(i);if(fi>=10.0*d)break;
+  float th=ang(fi*4.9+7.0);if(skip(th))continue;
+  float ph=fract(uT/(3.8+h1(fi*3.0)*2.2)+h1(fi*8.3));
+  vec2 p=rimPt(th,0.3+0.6*h1(fi*2.7))+vec2(sin(ph*7.0+fi)*5.0*K,-ph*(90.0+60.0*h1(fi))*K*RISE);
+  float r=(2.4+2.6*h1(fi*5.5))*K*(0.7+0.5*ph);
+  if(far(p,r*1.6))continue;
+  float dl=length(P-p),ring=smoothstep(r*0.6,r*0.88,dl)*smoothstep(r*1.2,r*0.95,dl);
+  light(wc*(ring*0.6+gd(P,p-vec2(r*0.35),r*0.3)*0.8+smoothstep(r,r*0.3,dl)*0.05)*sin(ph*PI));}
+ if(LAY>0.5){float u=(P.x-uRim.x)/uRim.z;
+  if(abs(u)<0.92){float h=P.y-(uRim.y+uRim.w*sqrt(1.0-u*u));
+   if(h>0.0&&h<30.0*K){float st=smoothstep(0.74,0.95,vn(vec2(P.x*0.3/K,P.y*0.03/K-uT*1.3)))*smoothstep(0.0,4.0*K,h)*(1.0-smoothstep(8.0*K,28.0*K,h));
+    light(wc*st*0.22*smoothstep(0.92,0.7,abs(u)));}}}
+ light(wc*fbm(vec2(P.x*0.012/K+uT*0.05,P.y*0.03/K))*rimBand(14.0)*0.1);}
+// ---------------- 4 Chitin: Glühkäfer schwirren um den Sockel
+void fxChitin(float d,vec3 col,vec3 oth,float mx){
+ vec3 fc=mix(vec3(0.85,1.0,0.45),oth,0.25*mx);
+ for(int i=0;i<12;i++){float fi=float(i);if(fi>=12.0*d)break;
+  float dir=h1(fi)>0.5?1.0:-1.0,a=uT*(0.25+0.35*h1(fi*3.1))*dir+h1(fi*7.7)*6.2832;if(skip(a))continue;
+  vec2 p=rimPt(a,0.75+0.35*h1(fi*2.2))+vec2((vn(vec2(uT*1.3,fi))-0.5)*14.0*K,-(14.0+55.0*h1(fi*4.4))*K*RISE+(vn(vec2(fi,uT*1.1))-0.5)*14.0*K);
+  if(far(p,18.0*K))continue;
+  float bl=0.3+0.7*pow(0.5+0.5*sin(uT*2.6+fi*1.9),6.0),ang=atan(cos(a)*uRim.w,-sin(a)*uRim.z)*dir;
+  vec2 q=rv(P-p,-ang);
+  float body=smoothstep(1.0,0.7,length(q/vec2(3.4*K,1.9*K)));
+  float wing=smoothstep(1.0,0.5,length(vec2(q.x+0.8*K,abs(q.y)-2.4*K)/vec2(2.6*K,1.7*K)))*(0.5+0.5*sin(uT*47.0+fi*3.0));
+  solid(vec3(0.09,0.11,0.05),body*0.75);
+  light(fc*(gd(P,p+rv(vec2(-1.8*K,0.0),ang),1.7*K)*1.1+gd(P,p,10.0*K)*0.1)*bl+vec3(0.8,0.92,0.7)*wing*0.16);}}
+// ---------------- 5 Licht: leise Lichtsäulen aus der Linse, Funkeln
+void fxLicht(float d,vec3 col,vec3 oth,float mx){
+ vec3 lc=mix(vec3(1.0,0.88,0.6),oth,0.25*mx);
+ for(int k=0;k<6;k++){float fk=float(k);if(fk>=6.0*d)break;
+  float a=fk*1.0472+uT*0.07;if(skip(a))continue;
+  vec2 b=rimPt(a,0.8);float h=b.y-P.y,H=(120.0+40.0*h1(fk*3.0))*K*RISE,w=(7.0+4.0*h1(fk))*K*(1.0+h/max(H,1.0)*0.6);
+  light(lc*exp(-pow((P.x-b.x)/w,2.0))*smoothstep(-2.0*K,10.0*K,h)*(1.0-smoothstep(0.0,H,h))*0.18*(0.75+0.25*sin(uT*0.9+fk*2.0)));}
+ for(int i=0;i<10;i++){float fi=float(i);if(fi>=10.0*d)break;
+  float th=ang(fi*6.1+9.0);if(skip(th))continue;
+  float ph=fract(uT/(4.5+h1(fi*2.9)*2.5)+h1(fi*3.9));
+  vec2 p=rimPt(th,0.5+0.45*h1(fi*7.0))+vec2(0.0,-ph*120.0*K*RISE);
+  if(far(p,14.0*K))continue;
+  light(lc*star4(P-p,5.0*K)*pow(max(0.0,sin(ph*PI*3.0+fi)),3.0)*sin(ph*PI)*0.6);}}
+// ---------------- 6 Pflanze: Ranken wachsen aus dem Rand, Blätter steigen in einer Spirale, Pollen
+void leaf(vec2 c,float L,float a,vec3 gc,float vis){
+ if(vis<0.01||far(c,L*1.2))return;
+ vec2 q=rv(P-c,-a);
+ float wv=L*0.42*(1.0-pow(clamp(abs(q.x)/L,0.0,1.0),2.0)*0.95);
+ float inside=smoothstep(0.7*K,-0.7*K,abs(q.y)-wv)*smoothstep(L,L-1.2*K,abs(q.x));
+ solid(gc*(q.y<0.0?1.05:0.72),inside*0.9*vis);
+ light(vec3(0.75,1.0,0.6)*exp(-abs(q.y)/(0.5*K))*inside*0.18*vis);}
+vec2 vine(vec2 b,float t,float H,float fk,float bend){return b+vec2((sin(t*2.2+uT*0.9+fk)*0.14+bend*t*t*0.3)*H,-t*H);}
+void fxPflanze(float d,vec3 col,vec3 oth,float mx){
+ vec3 gc=mix(vec3(0.38,0.74,0.36),oth,0.2*mx);
+ for(int k=0;k<5;k++){float fk=float(k);if(fk>=5.0*d)break;
+  float th=fk*1.2566+0.5+h1(fk*2.0)*0.5;if(skip(th))continue;
+  vec2 b=rimPt(th,0.98);float H=(30.0+22.0*h1(fk*3.0))*K*RISE*(LAY>0.5?0.8:1.0),bend=(h1(fk*5.0)-0.5)*2.0;
+  if(abs(P.x-b.x)>H*0.75+10.0*K||P.y>b.y+3.0*K||P.y<b.y-H-12.0*K)continue;
+  float dm=1e4,tb=0.0;vec2 pv=b;
+  for(int s=1;s<=6;s++){float t=float(s)/6.0;vec2 cu=vine(b,t,H,fk,bend);
+   float dd=segD(P,pv,cu);if(dd<dm){dm=dd;tb=t;}pv=cu;}
+  float w=(1.5-0.9*tb)*K;
+  solid(gc*0.62,smoothstep(w,w*0.25,dm)*0.92);
+  for(int j=0;j<2;j++){float t=j==0?0.5:0.95,sd=j==0?1.0:-1.0;
+   float a=sd*0.85-1.5708+sin(uT*1.4+fk+float(j))*0.2,L=(5.0+2.0*h1(fk+float(j)))*K;
+   leaf(vine(b,t,H,fk,bend)+vec2(cos(a),sin(a))*L*0.9,L,a,gc,1.0);}}
+ for(int i=0;i<8;i++){float fi=float(i);if(fi>=8.0*d)break;
+  float ph=fract(uT/(7.0+h1(fi*2.1)*3.0)+h1(fi*5.9)),th=h1(fi*3.3+11.0)*6.2832+ph*1.6;if(skip(th))continue;
+  vec2 p=rimPt(th,0.95+0.25*ph)+vec2(0.0,-ph*(80.0+60.0*h1(fi*4.0))*K*RISE);
+  leaf(p,(6.0+3.0*h1(fi*8.0))*K,uT*(1.2+h1(fi))+fi*2.0+sin(uT*2.0+fi)*0.6,gc,sin(ph*PI));}
+ for(int i=0;i<8;i++){float fi=float(i);if(fi>=8.0*d)break;
+  float th=ang(fi*8.1+13.0);if(skip(th))continue;
+  float ph=fract(uT/(5.0+h1(fi)*3.0)+h1(fi*4.7));
+  vec2 p=rimPt(th,0.6+0.4*h1(fi*3.0))+vec2(sin(ph*5.0+fi)*6.0*K,-ph*100.0*K*RISE);
+  if(far(p,5.0*K))continue;
+  light(vec3(0.8,1.0,0.55)*gd(P,p,1.4*K)*sin(ph*PI)*0.55);}}
+// ---------------- 7 Psyche: Gedankenwellen lösen sich vom Rand und steigen auf
+void fxPsyche(float d,vec3 col,vec3 oth,float mx){
+ vec3 pc=mix(vec3(0.9,0.45,1.0),oth,0.25*mx);
+ for(int k=0;k<3;k++){float w=fract(uT*0.2+float(k)/3.0);
+  vec2 c=uRim.xy+vec2(0.0,-w*120.0*K*RISE);vec2 rr=uRim.zw*(0.85-w*0.35);vec2 q=(P-c)/rr;
+  float wob=1.0+0.03*sin(atan(q.y,q.x)*3.0+uT*2.0+float(k));
+  light(pc*exp(-pow((length(q)*wob-1.0)*rr.y/(1.3*K),2.0))*sin(w*PI)*0.32*layMask(q.y));}
+ for(int i=0;i<8;i++){float fi=float(i);if(fi>=8.0*d)break;
+  float th=ang(fi*5.7+17.0);if(skip(th))continue;
+  float ph=fract(uT/(4.0+h1(fi*2.0)*2.0)+h1(fi*3.1));
+  vec2 p=rimPt(th,0.5+0.45*h1(fi*6.0))+vec2(sin(ph*6.0+fi)*8.0*K,-ph*100.0*K*RISE);
+  if(far(p,6.0*K))continue;
+  light(pc*gd(P,p,1.8*K)*sin(ph*PI)*0.6);}}
+// ---------------- 8 Schatten: dunkle Rauchschwaden kriechen über den Rand
+void fxSchatten(float d,vec3 col,vec3 oth,float mx){
+ float u=(P.x-uRim.x)/uRim.z;
+ if(abs(u)<1.05){float sq=sqrt(max(0.0,1.0-u*u)),h=uRim.y+(LAY>0.5?1.0:-1.0)*uRim.w*sq-P.y;
+  if(h>-8.0*K&&h<90.0*K){
+   vec2 w=vec2(P.x*0.018/K,P.y*0.03/K+uT*0.35);w+=vec2(fbm(w+uT*0.1),fbm(w+3.0))*0.8;
+   float den=fbm(w)*exp(-max(h,0.0)/((26.0+20.0*vn(vec2(P.x*0.01,uT*0.2)))*K*RISE+0.01))*smoothstep(-6.0*K,4.0*K,h)*smoothstep(1.05,0.8,abs(u));
+   solid(vec3(0.03,0.02,0.06),smoothstep(0.32,0.62,den)*0.6*(LAY>0.5?0.65:1.0));
+   light(mix(vec3(0.5,0.38,0.95),oth,0.3*mx)*smoothstep(0.28,0.4,den)*(1.0-smoothstep(0.42,0.6,den))*0.24);}}
+ for(int i=0;i<8;i++){float fi=float(i);if(fi>=8.0*d)break;
+  float th=ang(fi*6.3+19.0);if(skip(th))continue;
+  float ph=fract(uT/(5.0+h1(fi*2.4)*3.0)+h1(fi*4.1));
+  vec2 p=rimPt(th,0.8+0.3*h1(fi))+vec2(sin(ph*4.0+fi)*10.0*K,-ph*90.0*K*RISE);
+  if(far(p,10.0*K))continue;
+  solid(vec3(0.02,0.01,0.04),gd(P,p,2.6*K)*sin(ph*PI)*0.7);light(vec3(0.55,0.4,1.0)*gd(P,p,3.8*K)*sin(ph*PI)*0.12);}}
+// ---------------- 9 Spuk: durchscheinende Geister steigen in Bögen auf
+void ghost(vec2 p,float r,float ang,float fi,float vis,vec3 gc){
+ if(vis<0.01||far(p,r*3.8))return;
+ vec2 q=rv(P-p,ang);
+ float Lt=2.5*r,y=q.y,dh=length(q*vec2(1.0,1.05))-r,dt=1e4;
+ if(y>0.0&&y<Lt){float t=y/Lt;                                      // Körper bleibt erst breit, läuft dann in eine wehende Schleppe aus
+  dt=abs(q.x-sin(t*4.0-uT*3.2+fi)*0.42*r*pow(t,1.4))-r*(1.0-smoothstep(0.2,1.0,t)*0.9);}
+ float sd=min(dh,dt),body=smoothstep(1.2*K,-1.2*K,sd),edge=smoothstep(-0.4*r,0.0,sd)*body;
+ float fade=y>0.0?pow(1.0-clamp(y/Lt,0.0,1.0),0.7):1.0;
+ vec2 e1=(q-vec2(-0.36*r,-0.08*r))/vec2(0.16*r,0.23*r),e2=(q-vec2(0.36*r,-0.08*r))/vec2(0.16*r,0.23*r);
+ float eyes=clamp(smoothstep(1.0,0.6,length(e1))+smoothstep(1.0,0.6,length(e2)),0.0,1.0)*body;
+ light(gc*((body*0.26+edge*0.42)*fade*(1.0-eyes*0.92)+exp(-dot(q,q)/(r*r*3.0))*0.08*(1.0-eyes))*vis);
+ solid(vec3(0.03,0.01,0.06),eyes*0.8*vis);}
+void fxSpuk(float d,vec3 col,vec3 oth,float mx){
+ vec3 gc=mix(vec3(0.82,0.76,1.0),oth,0.3*mx);
+ for(int i=0;i<7;i++){float fi=float(i);if(fi>=7.0*d)break;
+  float th=ang(fi*7.3+23.0);if(skip(th))continue;
+  float ph=fract(uT/(6.0+h1(fi*2.2)*3.0)+h1(fi*3.7)),sw=ph*4.5+fi*2.0;
+  vec2 p=rimPt(th,0.85)+vec2(sin(sw)*18.0*K*ph,-(10.0+ph*(120.0+40.0*h1(fi)))*K*RISE);
+  float r=(10.0+4.0*h1(fi*9.0))*K*(0.55+0.45*smoothstep(0.0,0.3,ph));
+  float vis=smoothstep(0.0,0.18,ph)*(1.0-smoothstep(0.65,1.0,ph))*(0.8+0.2*sin(uT*3.0+fi));
+  ghost(p,r,clamp(cos(sw)*0.4,-0.45,0.45)*ph,fi,vis,gc);}
+ light(gc*fbm(vec2(P.x*0.015/K+uT*0.08,P.y*0.03/K))*rimBand(18.0)*0.07);}
+// ---------------- 10 Stein: Splitter kreisen langsam um den Sockel und blitzen auf, Steinstaub
+void shard(vec2 p,float w,float rot,float gl,vec3 tint){
+ if(far(p,w*2.5))return;
+ vec2 q=rv(P-p,rot);
+ float sd=abs(q.x)/w+abs(q.y)/(w*2.3),body=smoothstep(1.0,0.86,sd);
+ solid(mix(vec3(0.42,0.46,0.52),vec3(0.75,0.79,0.86),q.x>0.0?1.0:0.0)+tint*0.05,body*0.92);
+ light(vec3(1.0)*body*gl*0.55+vec3(0.9,0.95,1.0)*gd(P,p,w*2.3)*gl*0.12+vec3(0.9,0.95,1.0)*smoothstep(0.86,0.98,sd)*smoothstep(1.06,0.98,sd)*0.22);}
+void fxStein(float d,vec3 col,vec3 oth,float mx){
+ vec3 tint=oth*0.5*mx;
+ for(int i=0;i<9;i++){float fi=float(i);if(fi>=9.0*d)break;
+  float a=uT*0.18*(1.0+0.3*h1(fi))+fi*0.698+h1(fi*3.0);if(skip(a))continue;
+  vec2 p=rimPt(a,1.07)+vec2(0.0,-(10.0+30.0*h1(fi*4.0))*K*RISE+sin(uT*1.1+fi)*3.0*K);
+  shard(p,(3.5+2.5*h1(fi*7.0))*K,uT*0.6*(h1(fi*5.0)-0.5)+fi,pow(max(0.0,sin(uT*1.4+fi*1.7)),12.0),tint);}
+ for(int i=0;i<10;i++){float fi=float(i);if(fi>=10.0*d)break;
+  float th=ang(fi*4.4+29.0);if(skip(th))continue;
+  float ph=fract(uT/(7.0+h1(fi)*3.0)+h1(fi*2.8));
+  vec2 p=rimPt(th,0.7+0.4*h1(fi*6.0))+vec2(0.0,-ph*50.0*K*RISE);
+  if(far(p,5.0*K))continue;
+  light(vec3(0.7,0.74,0.8)*gd(P,p,1.3*K)*sin(ph*PI)*0.4);}}
+// ---------------- 11 Sturm: kleine Entladungen springen über den Rand, Windschlieren
+void fxSturm(float d,vec3 col,vec3 oth,float mx){
+ vec3 ec=mix(vec3(0.6,0.88,1.0),oth,0.25*mx);float fl=floor(uT*9.0);
+ for(int k=0;k<3;k++){float fk=float(k);if(fk>=3.0*d+0.5)break;
+  float seed=fk*17.0+floor(uT*1.6+fk*0.37)*3.1,a0=h1(seed)*6.2832,a1=a0+0.35+0.3*h1(seed+1.0);
+  if(skip((a0+a1)*0.5))continue;
+  vec2 m0=rimPt(a0,1.0),m1=rimPt(a1,1.0);
+  if(P.x<min(m0.x,m1.x)-20.0*K||P.x>max(m0.x,m1.x)+20.0*K||P.y<min(m0.y,m1.y)-30.0*K||P.y>max(m0.y,m1.y)+20.0*K)continue;
+  float on=step(0.35,h1(fl*1.3+fk*7.0)),dm=1e4;vec2 pv=m0;
+  for(int s=1;s<=6;s++){float t=float(s)/6.0;vec2 cu=rimPt(mix(a0,a1,t),1.0)+vec2(0.0,-(sin(t*PI)*16.0+(h1(fl+fk*3.0+float(s))-0.5)*10.0)*K*RISE);
+   if(s==6)cu=m1;dm=min(dm,segD(P,pv,cu));pv=cu;}
+  light(ec*(exp(-dm/(0.8*K))*1.0+exp(-dm/(6.0*K))*0.14)*on);}
+ for(int i=0;i<6;i++){float fi=float(i);if(fi>=6.0*d)break;
+  float a=uT*(0.8+0.4*h1(fi))+h1(fi*3.0)*6.2832;vec2 c=uRim.xy+vec2(0.0,-(14.0+40.0*h1(fi*5.0))*K*RISE);
+  vec2 q=(P-c)/(uRim.zw*(1.05+0.15*h1(fi)));
+  light(ec*exp(-pow(abs(length(q)-1.0)*uRim.w/(0.9*K),2.0))*smoothstep(0.9,0.0,abs(mod(atan(q.y,q.x)-a+PI,2.0*PI)-PI))*0.16*layMask(q.y));}}
+// ---------------- 12 Toxic: Giftblasen steigen auf und platzen, grüner Dunst am Rand
+void fxToxic(float d,vec3 col,vec3 oth,float mx){
+ vec3 tc=mix(vec3(0.55,1.0,0.3),oth,0.25*mx);
+ for(int i=0;i<10;i++){float fi=float(i);if(fi>=10.0*d)break;
+  float th=ang(fi*3.9+31.0);if(skip(th))continue;
+  float ph=fract(uT/(3.2+h1(fi*2.0)*2.2)+h1(fi*6.6));
+  vec2 p=rimPt(th,0.25+0.6*h1(fi*4.0))+vec2(sin(ph*6.0+fi)*3.0*K,-ph*(55.0+45.0*h1(fi))*K*RISE);
+  float pop=smoothstep(0.85,1.0,ph),r=(3.0+3.5*h1(fi*7.0))*K*(0.6+0.6*ph)*(1.0+pop*0.8);
+  if(far(p,r*1.4))continue;
+  float dl=length(P-p),ring=smoothstep(r*0.55,r*0.85,dl)*smoothstep(r*1.2,r*0.95,dl);
+  light(tc*(ring*0.55*(1.0-pop*0.5)+gd(P,p-vec2(r*0.35),r*0.3)*0.6*(1.0-pop)+smoothstep(r,r*0.4,dl)*0.08*(1.0-pop))*smoothstep(0.0,0.1,ph)*(1.0-pop*pop));}
+ light(tc*fbm(vec2(P.x*0.02/K-uT*0.06,P.y*0.04/K+uT*0.1))*rimBand(14.0)*0.13);}
+// ---------------- 13 Ur: alte Runen steigen auf, ein Lichtkranz kreist um den Rand
+void fxUr(float d,vec3 col,vec3 oth,float mx){
+ vec3 ac=mix(vec3(1.0,0.72,0.35),oth,0.25*mx);
+ for(int i=0;i<6;i++){float fi=float(i);if(fi>=6.0*d)break;
+  float th=ang(fi*5.1+37.0);if(skip(th))continue;
+  float ph=fract(uT/(6.0+h1(fi*2.6)*3.0)+h1(fi*4.8));
+  vec2 c=rimPt(th,0.55+0.4*h1(fi*3.3))+vec2(0.0,-(10.0+ph*100.0)*K*RISE);
+  float s=(7.0+3.0*h1(fi*8.0))*K;if(far(c,s*1.8))continue;
+  vec2 q=P-c;float br=h1(fi*9.1),sg=br>0.5?1.0:-1.0;
+  float dm=min(segD(q,vec2(0.0,-s),vec2(0.0,s)),min(segD(q,vec2(0.0,-s*0.3+br*s*0.4),vec2(sg*s*0.6,-s*0.75+br*s*0.4)),segD(q,vec2(0.0,s*0.25),vec2(-sg*s*0.55,s*0.6))));
+  light(ac*(exp(-dm/(0.65*K))*0.75+exp(-dm/(3.5*K))*0.1)*sin(ph*PI));}
+ for(int i=0;i<12;i++){float fi=float(i);if(fi>=12.0*d)break;
+  float a=uT*0.25+fi*0.5236;if(skip(a))continue;
+  vec2 p=rimPt(a,1.04)+vec2(0.0,-(6.0+sin(uT*1.2+fi)*3.0)*K*RISE);if(far(p,6.0*K))continue;
+  light(ac*gd(P,p,1.5*K)*(0.4+0.3*sin(uT*2.0+fi*1.3)));}}
+void fx(float t,float d,vec3 col,vec3 oth,float mx){int k=int(t+0.5);
+ if(k==0)fxNorm(d,col,oth,mx);else if(k==1)fxBrandt(d,col,oth,mx);else if(k==2)fxErde(d,col,oth,mx);else if(k==3)fxFlut(d,col,oth,mx);
+ else if(k==4)fxChitin(d,col,oth,mx);else if(k==5)fxLicht(d,col,oth,mx);else if(k==6)fxPflanze(d,col,oth,mx);else if(k==7)fxPsyche(d,col,oth,mx);
+ else if(k==8)fxSchatten(d,col,oth,mx);else if(k==9)fxSpuk(d,col,oth,mx);else if(k==10)fxStein(d,col,oth,mx);else if(k==11)fxSturm(d,col,oth,mx);
+ else if(k==12)fxToxic(d,col,oth,mx);else if(k==13)fxUr(d,col,oth,mx);}
+void main(){
+ P=vUv*uSize;LAY=uLayer;K=uK;RISE=uRise;gL=vec3(0.0);gS=vec4(0.0);
+ if(uA<0.0||P.y<uRim.y-230.0*K||abs(P.x-uRim.x)>uRim.z*1.35){gl_FragColor=vec4(0.0);return;}
+ // Randschein in den Typfarben; bei zwei Typen wandern die Farben um den Rand
+ vec2 q=(P-uRim.xy)/uRim.zw;float th=atan(q.y,q.x);
+ vec3 rc=uB<0.0?uColA:mix(uColA,uColB,0.5+0.5*sin(th*2.0+uT*0.5));
+ light(rc*rimBand(3.5)*0.22*(0.8+0.2*sin(uT*1.3)));
+ bool two=uB>=0.0;float dn=two?0.62:1.0;
+ fx(uA,dn,uColA,two?uColB:uColA,two?1.0:0.0);
+ if(two)fx(uB,dn,uColB,uColA,1.0);
+ vec3 c=gL+gS.rgb;float a=clamp(max(max(c.r,max(c.g,c.b)),gS.a),0.0,1.0);
+ gl_FragColor=vec4(min(c,vec3(a)),a)*uAmp;}`;
+
+const PedFX = (() => {
+  let gl = null, cv = null, U = {}, ok = false, stages = [], lastT = 0, RMq = null, frozen = false;
+  const hexRgb = h => { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
+  function setup() {
+    const sh = (t, src) => { const o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; };
+    const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, PFX_VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, PFX_FS)); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr));
+    gl.useProgram(pr);
+    ['uSize', 'uRim', 'uT', 'uLayer', 'uAmp', 'uRise', 'uK', 'uA', 'uB', 'uColA', 'uColB'].forEach(n => U[n] = gl.getUniformLocation(pr, n));
+    const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const aP = gl.getAttribLocation(pr, 'aP'); gl.enableVertexAttribArray(aP); gl.vertexAttribPointer(aP, 2, gl.FLOAT, false, 0, 0);
+    gl.disable(gl.BLEND);
+  }
+  function init() {
+    RMq = matchMedia('(prefers-reduced-motion: reduce)');
+    try {
+      cv = document.createElement('canvas'); cv.width = 64; cv.height = 64;
+      gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false, preserveDrawingBuffer: true });
+      if (!gl) throw new Error('kein WebGL');
+      setup(); ok = true;
+      cv.addEventListener('webglcontextlost', e => { e.preventDefault(); ok = false; });
+      cv.addEventListener('webglcontextrestored', () => { try { setup(); ok = true; } catch (err) { console.warn(err); } });
+    } catch (e) { console.warn('Sockel-Effekt ohne WebGL:', e.message); ok = false; }
+  }
+  /* Bühne anlegen. o.back/o.front: Elemente hinter bzw. vor dem Wesen (gleiche Fläche),
+     o.box: Größe der Fläche in CSS-px, o.rim: Mitte x/y und Radien x/y des oberen Sockelrands in der Fläche,
+     o.k: Größenfaktor der Teilchen (1 = Detailfenster), o.scale: Skalierung der Bühne */
+  function stage(o) {
+    const mk = host => { const c = document.createElement('canvas'); c.style.cssText = 'position:absolute;inset:0;width:100%;height:100%'; host.appendChild(c); return { cv: c, ctx: c.getContext('2d') }; };
+    const S = { o, b: mk(o.back), f: mk(o.front), types: [], next: null, amp: 0, ampTo: 0, rise: 0, T: Math.random() * 60, clear: true };
+    stages.push(S);
+    return {
+      show(types) {   // Typen zeigen; andere Typen werden erst ausgeblendet, dann wachsen die neuen aus dem Sockel
+        const same = types.join() === S.types.join();
+        if (same) { if (S.amp < 0.3) S.rise = 0.25; S.next = null; S.ampTo = 1; return; }   // gleiche Typen, neues Wesen: wächst erneut aus dem Sockel
+        if (S.amp > 0.02) { S.next = types.slice(); S.ampTo = 0; } else { S.types = types.slice(); S.next = null; S.rise = 0.25; S.ampTo = 1; }
+      },
+      hide() { S.next = null; S.ampTo = 0; },
+      reset() {   // sofort leer (beim Öffnen des Fensters); der nächste show() lässt den Effekt neu aus dem Sockel wachsen
+        S.amp = S.ampTo = 0; S.rise = 0.25; S.next = null; S.types = []; S.clear = true;
+        for (const t of [S.b, S.f]) t.ctx.clearRect(0, 0, t.cv.width, t.cv.height);
+      },
+      get types() { return S.types.slice(); },
+    };
+  }
+  function draw(S, layer, tgt, w, h) {
+    gl.uniform1f(U.uLayer, layer); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    tgt.ctx.clearRect(0, 0, w, h); tgt.ctx.drawImage(cv, 0, cv.height - h, w, h, 0, 0, w, h);
+  }
+  function tick(now) {
+    if (!ok) return;
+    const dt = lastT ? Math.min(0.1, (now - lastT) / 1000) : 0; lastT = now;
+    const still = RMq && RMq.matches;
+    for (const S of stages) {
+      // Ein- und Ausblenden: aus dem Sockel wachsen (rise), sanft auftauchen (amp)
+      const up = S.ampTo > S.amp;
+      S.amp += (S.ampTo - S.amp) * Math.min(1, dt * (up ? 1.6 : 7));
+      if (up || S.ampTo > 0) S.rise += (1 - S.rise) * Math.min(1, dt * 1.1);
+      if (S.next && S.amp < 0.02) { S.types = S.next; S.next = null; S.rise = 0.25; S.ampTo = 1; }
+      if (!still && !frozen) S.T += dt;
+      const host = S.o.back;
+      if (!host.offsetParent || !S.types.length) continue;   // Reiter nicht sichtbar oder kein Typ
+      if (now - (S.last || 0) < 30 && !frozen) continue;   // ~30 Bilder/s reichen für die ruhige Bewegung
+      const sig = S.types.join() + S.amp.toFixed(3) + S.rise.toFixed(3) + S.T;
+      if (still && sig === S.sig) continue;   // reduzierte Bewegung: nur neu zeichnen, wenn sich etwas ändert
+      S.last = now; S.sig = sig;
+      const s = (S.o.scale ? S.o.scale() : 1) * Math.min(window.devicePixelRatio || 1, 1.25) * 0.75;   // weiches Licht braucht nicht die volle Auflösung
+      const w = Math.max(8, Math.round(S.o.box[0] * s)), h = Math.max(8, Math.round(S.o.box[1] * s));
+      for (const t of [S.b, S.f]) if (t.cv.width !== w || t.cv.height !== h) { t.cv.width = w; t.cv.height = h; }
+      if (S.amp < 0.004) { if (!S.clear) { S.b.ctx.clearRect(0, 0, w, h); S.f.ctx.clearRect(0, 0, w, h); S.clear = true; } continue; }
+      S.clear = false;
+      if (cv.width < w || cv.height < h) { cv.width = Math.max(cv.width, w); cv.height = Math.max(cv.height, h); }
+      gl.viewport(0, 0, w, h);
+      const top = Math.max(0, Math.floor((S.o.rim[1] - 240 * (S.o.k || 1)) / S.o.box[1] * h));
+      gl.disable(gl.SCISSOR_TEST); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);   // ganze Fläche leeren (der Zwischenspeicher wird von beiden Bühnen genutzt)
+      gl.enable(gl.SCISSOR_TEST); gl.scissor(0, 0, w, h - top);
+      const ta = TYPE[S.types[0]], tb = S.types[1] ? TYPE[S.types[1]] : null;
+      gl.uniform2f(U.uSize, S.o.box[0], S.o.box[1]); gl.uniform4f(U.uRim, ...S.o.rim);
+      gl.uniform1f(U.uT, S.T); gl.uniform1f(U.uAmp, S.amp * (S.o.amp || 1)); gl.uniform1f(U.uRise, S.rise); gl.uniform1f(U.uK, S.o.k || 1);
+      gl.uniform1f(U.uA, ta ? ta.i : -1); gl.uniform1f(U.uB, tb ? tb.i : -1);
+      gl.uniform3fv(U.uColA, hexRgb(ta ? ta.col : '#ffffff')); gl.uniform3fv(U.uColB, hexRgb(tb ? tb.col : (ta ? ta.col : '#ffffff')));
+      draw(S, 0, S.b, w, h); draw(S, 1, S.f, w, h);
+    }
+  }
+  // nur für Tests: Zeit anhalten, Zustand setzen
+  const debug = { freeze(v) { frozen = v; }, set(o) { stages.forEach(S => Object.assign(S, o)); }, get stages() { return stages; } };
+  return { init, stage, tick, debug, get ok() { return ok; } };
 })();
 
 </script>
@@ -2089,6 +2510,7 @@ function select(i, first) {
   if (first || prevUid === null) holoIn(S, c.sp, tok); else holoOut(S, tok, () => holoIn(S, c.sp, tok));
 }
 function holoOut(S, tok, done) {
+  if (S.pfx) S.pfx.hide();   // Sockel-Effekt sinkt zurück
   const v = S.view; v.tw = v.tw.filter(x => x.prop !== 'scan'); v.p.scan = 0;
   if (!v.cur) return done();
   if (RM.matches) { v.tween('col', 1, D(150), () => { if (tok === S.tok) done(); }, t => t); return; }
@@ -2099,6 +2521,7 @@ function holoOut(S, tok, done) {
 function holoIn(S, sp, tok) {
   const v = S.view, rd = RIGDEF[sp.rig];
   if (S === MAIN) setAura(sp.aura); else $('#dexInfo').style.setProperty('--dxa', sp.aura);
+  if (S.pfx) S.pfx.show(S === MAIN && fxPreview ? fxPreview : sp.types);   // Typ steigt aus dem Sockel
   v.tw = []; v.use(sp.rig, rigs[sp.rig], stageRect(rd, S.geo));
   Object.assign(v.p, { build: 0, holo: 1, glitch: 1, col: 0, scan: 0, flash: 0, sx: 1, sy: 1, offY: 0 });
   if (RM.matches) { Object.assign(v.p, { build: 1, holo: 0, glitch: 0 }); return; }
@@ -2115,7 +2538,7 @@ function holoIn(S, sp, tok) {
   }, D(950));
   setTimeout(() => { if (tok === S.tok) ped.classList.remove('charge'); }, D(1500));
 }
-function holoClear(S) { const v = S.view; if (!v) return; v.tw = []; v.cur = null; v.gl.clearColor(0, 0, 0, 0); v.gl.clear(v.gl.COLOR_BUFFER_BIT); }
+function holoClear(S) { if (S.pfx) S.pfx.hide(); const v = S.view; if (!v) return; v.tw = []; v.cur = null; v.gl.clearColor(0, 0, 0, 0); v.gl.clear(v.gl.COLOR_BUFFER_BIT); }
 function scanHolo() {   // Scan-Band über das fertige Hologramm
   const v = MAIN.view; if (!v || v.p.build < 1 || v.p.col > 0) return false;
   v.p.scan = 0.001; v.tween('scan', 1, D(900), () => { v.p.scan = 0; }, t => t);
@@ -2484,6 +2907,35 @@ function setLocation(id) {   // Schnittstelle: das Spiel meldet den aktuellen Or
   say(`Angekommen: ${l.name}.`);
 }
 
+/* ---------- Vorschau: andere Typen am Sockel ausprobieren (nur für die Skizze) ---------- */
+let fxPreview = null;
+function buildFxPicker() {
+  const row = (k, none) => (none ? `<button class="fxb none" data-k="${k}" data-t="" aria-pressed="false" title="Kein zweiter Typ">–</button>` : '<span class="fxb" aria-hidden="true"></span>') +
+    TYPES.map(t => `<button class="fxb" data-k="${k}" data-t="${t.id}" aria-pressed="false" title="${t.name}" style="--tc:${t.col}"><span class="ty" data-ty="${t.id}"></span></button>`).join('');
+  $('#fxA').innerHTML = row(0, false); $('#fxB').innerHTML = row(1, true);
+  mountTypes($('#fxPick'));
+  $$('#fxPick .fxb').forEach(b => b.addEventListener('click', () => {
+    const k = +b.dataset.k, cur = (fxPreview || team[sel].sp.types).slice();
+    if (k === 0) cur[0] = b.dataset.t; else if (b.dataset.t) cur[1] = b.dataset.t; else cur.length = 1;
+    if (cur[1] === cur[0]) cur.length = 1;
+    setFxPreview(cur);
+  }));
+  $('#fxTestBtn').addEventListener('click', toggleFxPicker);
+  $('#fxClose').addEventListener('click', toggleFxPicker);
+}
+function setFxPreview(types) {
+  fxPreview = types ? types.slice(0, 2) : null;
+  const show = fxPreview || (team[sel] ? team[sel].sp.types : []);
+  $$('#fxPick .fxb').forEach(b => b.setAttribute('aria-pressed', +b.dataset.k === 0 ? b.dataset.t === show[0] : (b.dataset.t || undefined) === show[1]));
+  if (MAIN.pfx) MAIN.pfx.show(show);
+}
+function toggleFxPicker() {
+  const p = $('#fxPick'), on = p.hidden;
+  p.hidden = !on; $('#fxTestBtn').setAttribute('aria-expanded', on);
+  setFxPreview(on ? team[sel].sp.types : null);
+  if (on) TypeFX.flare(p);
+}
+
 /* ---------- Schnellzugriff (Reiter Wesen) ---------- */
 function buildItems() {
   const box = $('#items'); box.innerHTML = '';
@@ -2518,7 +2970,7 @@ function openInv() {
   if (open) return; open = true; $('#summonLabel').classList.remove('show');
   const pip = $('#pip'); pip.classList.add('avatar'); pip.classList.remove('free'); zoomPip(1, 900); pipFallbackFrame(true); placePip(true);
   setEyeFlashPos(pipViewHead());
-  [MAIN, DEXS].forEach(S => { if (S.view) { S.view.tw = []; Object.assign(S.view.p, { build: 0, col: 0, scan: 0 }); } });   // Hologramme erst nach dem Aufklappen projizieren
+  [MAIN, DEXS].forEach(S => { if (S.view) { S.view.tw = []; Object.assign(S.view.p, { build: 0, col: 0, scan: 0 }); } if (S.pfx) S.pfx.reset(); });   // Hologramme erst nach dem Aufklappen projizieren
   shownUid = null;
   setTimeout(() => {
     eyeFlash();
@@ -2564,6 +3016,7 @@ function bindUI() {
     if (e.key === 'Tab') { e.preventDefault(); const ids = NAV.map(n => n[0]); let k = Math.max(0, ids.indexOf(tab)); k = (k + (e.shiftKey ? -1 : 1) + ids.length) % ids.length; return setTab(ids[k]); }
     const mv = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 2, ArrowUp: -2 }[e.key];
     if (tab === 'wesen') {
+      if (e.key === 't' || e.key === 'T') return toggleFxPicker();
       if (mv !== undefined) { e.preventDefault(); const n = sel + mv; if (n >= 0 && n < team.length) { const c = $$('#grid .card')[n]; c.focus({ preventScroll: true }); if (team[n]) select(n); } }
       if (['1', '2', '3', '4'].includes(e.key)) { const it = $$('#items .item')[+e.key - 1]; if (it) it.click(); }
     }
@@ -2611,6 +3064,7 @@ function frame(now) {
     }
     if (tab === 'dex' && DEXS.view) { DEXS.view.p.glow = 0.85 + 0.25 * Math.sin(t * 1.6 + 1); DEXS.view.draw(now); }
     TypeFX.tick(now);
+    PedFX.tick(now);
   }
   requestAnimationFrame(frame);
 }
@@ -2636,12 +3090,17 @@ loadAssets().then(() => {
   if (MAIN.view) { MAIN.view.geo = GEO_MAIN; Object.assign(MAIN.view.p, { tint: 1, traits: 1, build: 0 }); }
   DEXS.view = makeView($('#dexCv'), [520, 380], c0.sp.rig, c0.sp.rig, stageRect(rd, GEO_DEX), rd.img);
   if (DEXS.view) { DEXS.view.geo = GEO_DEX; DEXS.view.cur = null; Object.assign(DEXS.view.p, { tint: 1, traits: 1, build: 0 }); }
+  // Sockel-Effekt: Fläche über dem Sockel; rim = Mitte und Radien des oberen Sockelrands in dieser Fläche
+  PedFX.init();
+  MAIN.pfx = PedFX.stage({ back: $('#pfxBack'), front: $('#pfxFront'), box: [600, 452], rim: [360, 330.6, 249.4, 49.6], k: 1, scale: () => SCALE });
+  DEXS.pfx = PedFX.stage({ back: $('#dexPfxB'), front: $('#dexPfxF'), box: [546, 340], rim: [273, 270.3, 149.1, 29.7], k: 0.6, scale: () => SCALE });
+  buildFxPicker();
   fit();
   placePip(true);
   requestAnimationFrame(frame);
   openInv();
   window.__hollental = { rigs, views, TypeFX, get bigView() { return MAIN.view; }, get dexView() { return DEXS.view; }, get pipView() { return pipView; },
-    select, openInv, closeInv, scanHolo, setTab, setLocation, dexSelect, mapSelect,
+    select, openInv, closeInv, scanHolo, setTab, setLocation, dexSelect, mapSelect, fxTest: setFxPreview, get pfxTypes() { return MAIN.pfx ? MAIN.pfx.types : []; },
     state: () => ({ tab, sel, here, goal, team: team.map(c => c && `${c.sp.name} ${c.lv}`), boxes: BOXES.map(b => b.slots.filter(Boolean).length), quick: [...QUICK] }) };
 });
 </script>
