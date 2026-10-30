@@ -8,6 +8,25 @@ Eckklammern, Kupferwinkel an den Fenstern, gleiche Fenster-Projektion.
 `index.html` im Browser öffnen. Die Datei enthält alles, auch die Keyart
 (als WebP eingebettet). Nur die Schriften kommen von Google Fonts.
 
+## 4K und ganzer Bildschirm
+
+- Die Keyart liegt in 3840 × 2160 vor. Das Original (1672 × 941) wurde mit Real-ESRGAN
+  (Modell `x4plus_anime_6B`, für gezeichnete Bilder) hochgerechnet und zu 20 % mit einer
+  weichen Vergrößerung gemischt, damit Nebel und Wolken nicht wie Plastik wirken. Danach wurde
+  die Farbabstimmung in 4K neu eingerechnet.
+- Die Szene wird in der vollen Auflösung des Bildschirms gezeichnet, auf einem 4K-Bildschirm also
+  in 3840 × 2160, auch bei Windows-Skalierung (150 %, 200 %). Obergrenze ist die Einstellung
+  Grafik > Auflösung; voreingestellt ist die Auflösung des Bildschirms.
+- Menü und Fenster sind in 1920 × 1080-Einheiten gebaut und werden bei 4K genau doppelt so groß
+  gezeichnet. Schrift und Linien bleiben dabei scharf.
+- Ganzer Bildschirm: Voreingestellt ist Vollbild. Die Seite wechselt beim ersten Tastendruck oder
+  Klick ins Vollbild, weil Browser das nur nach einer Eingabe erlauben. Mit Esc verlässt man es bis
+  zum nächsten Laden. Unter Grafik > Fenstermodus lässt sich "Fenster" fest einstellen.
+- Schafft die Grafikkarte bei 4K keine 30 Bilder pro Sekunde, zeichnet die Seite den Hintergrund
+  etwas kleiner (höchstens bis 70 %). Menü und Schrift bleiben scharf.
+- Für Godot: Fenstergröße 3840 × 2160 im Vollbild, Stretch-Modus `canvas_items` mit Basisgröße
+  1920 × 1080, dann passen die Maße unten 1:1.
+
 ## Was zu sehen ist
 
 - **Hintergrund:** Die Keyart, farblich ans UI angepasst und leise bewegt (WebGL).
@@ -71,11 +90,11 @@ Die Hinweise unten rechts wechseln zwischen Tastatur und Controller, je nachdem,
 - `index.html#neu` : erster Start ohne Spielstand (erster Punkt ist "Spiel starten")
 - `index.html#masken` : zeigt farbig, welche Bildbereiche wie bewegt werden (zum Nachjustieren)
 
-Einstellungen werden im Browser gespeichert (localStorage). "Bewegung reduzieren" wirkt sofort,
-und das System-Setting "Bewegung reduzieren" wird beim ersten Start übernommen.
+Einstellungen werden im Browser gespeichert (localStorage). "Bewegung reduzieren" und "Auflösung"
+wirken sofort, und das System-Setting "Bewegung reduzieren" wird beim ersten Start übernommen.
 Ohne WebGL zeigt die Seite die Keyart mit einer langsamen Kamerafahrt.
 
-## Maße (1920 × 1080)
+## Maße (in 1920 × 1080-Einheiten, bei 4K alles × 2)
 
 | Element | Position |
 |---|---|
